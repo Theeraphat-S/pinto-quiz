@@ -272,6 +272,8 @@ Motion is split in two. Ambient loops live in `web/style.css`: floating mascots,
 - **Leaving is short.** The old scene fades out in 150ms before the next one comes in. The host can advance at any moment, and anything still moving stops at once.
 - **The markup holds the final state.** Animations play from a start state back to what the stylesheet already shows, then hand their properties back. Numbers count up from zero to the value already in the markup.
 - **Reveal choreography.** The correct tile lands with the reveal sound (celebrate). Wrong tiles fade at the same time. Then the tallies fill and the counts climb in A–D order. The whole sequence finishes in about 1.5s.
+- **Live counts react.** Each new answer bumps the "ตอบแล้ว" numeral and the track grows from where it was.
+- **Standings move from where players stood.** The host snapshots ranks and scores at the countdown, before anyone answers. On the standings, the podium rises 3 → 2 → 1, listed rows slide from their old slot (or in from above or below when they crossed the podium line), and scores climb from their old totals. The finale takes about 2.5s, counts every score from zero and pops the first-place medal last. On phones, the player's rank and total climb from their last reveal, and a chip shows "▲ ขึ้น / ▼ ลง / ● อันดับเดิม".
 - **Reduced motion is handled once.** Every Motion call goes through `play()`/`countUp()`, which skip the animation entirely and leave the final state when `prefers-reduced-motion: reduce` is set.
 
 ## Do's and Don'ts

@@ -34,11 +34,11 @@ export function rise(elements: Element[], startDelay = 0, step = 0.06, distance 
   elements.forEach((e, i) => play(e, { opacity: [0, Number(getComputedStyle(e).opacity)], y: [distance, 0] }, { ...springs.snappy, delay: startDelay + i * step }));
 }
 
-// Numbers in the markup are final; this replays them from zero.
-export function countUp(el: Element | null, to: number, format: (n: number) => string, delay = 0): void {
-  if (!el || !to || reduced.matches) return;
-  el.textContent = format(0);
-  track(animate(0, to, { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1], onUpdate: v => { el.textContent = format(Math.round(v)); } }), () => { if (el.isConnected) el.textContent = format(to); });
+// Numbers in the markup are final; this replays them from `from` (zero by default).
+export function countUp(el: Element | null, to: number, format: (n: number) => string, delay = 0, from = 0): void {
+  if (!el || to === from || reduced.matches) return;
+  el.textContent = format(from);
+  track(animate(from, to, { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1], onUpdate: v => { el.textContent = format(Math.round(v)); } }), () => { if (el.isConnected) el.textContent = format(to); });
 }
 
 // The host can advance at any moment: whatever is still moving stops so the next scene takes over at once.
@@ -83,6 +83,49 @@ export function revealIn(root: ParentNode): void {
 export function resultIn(root: ParentNode, points: number): void {
   play(root.querySelector('.result-stamp'), { opacity: [0, 1], scale: [0.3, 1], rotate: [-25, 0] }, springs.celebrate);
   countUp(root.querySelector('.resultpoints strong'), points, n => `+${n.toLocaleString()}`, 0.25);
+}
+
+// Each new answer bumps the count and the track grows from where it was.
+export function answeredIn(root: ParentNode, from: number): void {
+  const bar = root.querySelector<HTMLElement>('.answered-track > div');
+  play(bar, { scaleX: [from, Number(bar?.style.getPropertyValue('--ratio') || 0)] }, { ...springs.snappy, duration: 0.5 });
+  play(root.querySelector('.answered strong'), { scale: [1.18, 1] }, springs.celebrate);
+}
+
+// Where each player stood, and with how many points, before the question being ranked.
+export type Standing = { rank: Map<string, number>; score: Map<string, number> };
+const placeOf = (e: Element) => Number(/place-(\d)/.exec(e.className)?.[1] || 3);
+const points = (n: number) => `${n.toLocaleString()} คะแนน`;
+
+// Standings: the podium rises 3 → 2 → 1, listed rows slide from their old slot, and scores climb from their old totals.
+// The finale takes its time and counts every score from zero.
+export function standingsIn(root: ParentNode, before: Standing | null, finale: boolean): void {
+  const delays = finale ? { 3: 0.3, 2: 1.1, 1: 2 } : { 3: 0.1, 2: 0.2, 1: 0.3 };
+  all(root, '.podium-place').forEach(place => {
+    const rank = placeOf(place) as 1 | 2 | 3, delay = delays[rank], id = place.getAttribute('data-player') || '';
+    play(place, { opacity: [0, 1], y: [48, 0] }, { ...(rank === 1 && finale ? springs.celebrate : springs.snappy), duration: finale ? 0.8 : 0.5, delay });
+    const score = place.querySelector('p');
+    countUp(score, Number.parseInt((score?.textContent || '0').replace(/,/g, '')), points, delay + 0.2, finale ? 0 : before?.score.get(id) ?? 0);
+  });
+  if (finale) play(root.querySelector('.place-1 .medal'), { scale: [0, 1], rotate: [-30, 0] }, { ...springs.celebrate, delay: 2.4 });
+  const rows = all(root, '.rest .rankrow') as HTMLElement[];
+  rows.forEach((row, j) => {
+    const id = row.dataset.player || '', was = before?.rank.get(id), now = 3 + j, delay = 0.25 + j * 0.05;
+    if (was !== undefined && was !== now && rows[was - 3]) play(row, { y: [rows[was - 3].offsetTop - row.offsetTop, 0] }, { ...springs.snappy, duration: 0.6, delay: 0.2 });
+    else if (was !== undefined && was !== now) play(row, { opacity: [0, 1], y: [was < now ? -40 : 40, 0] }, { ...springs.snappy, delay });
+    else rise([row], delay, 0, 12);
+    const score = row.querySelector('strong:last-child');
+    countUp(score, Number.parseInt((score?.textContent || '0').replace(/,/g, '')), n => n.toLocaleString(), delay, finale ? 0 : before?.score.get(id) ?? 0);
+  });
+}
+
+// The player's own rank climbs (or slips) from where they stood after the last question, then the move chip pops.
+export function myRankIn(root: ParentNode, before: { rank: number; score: number } | null): void {
+  const label = root.querySelector('.resultpoints strong'), total = root.querySelector('.resultpoints > span'), text = label?.textContent || '';
+  if (before && /^#\d+$/.test(text)) countUp(label, Number(text.slice(1)), n => `#${n}`, 0.1, before.rank);
+  const rest = (total?.textContent || '').replace(/^[\d,]+/, '');
+  if (before) countUp(total, Number.parseInt((total?.textContent || '0').replace(/,/g, '')), n => n.toLocaleString() + rest, 0.1, before.score);
+  play(root.querySelector('.rank-move'), { opacity: [0, 1], scale: [0.6, 1] }, { ...springs.celebrate, delay: 0.7 });
 }
 
 export function joinIn(names: Element[]): void {
