@@ -2,6 +2,12 @@
 
 เว็บควิซภาษาไทยบน Cloudflare Workers + SQLite Durable Objects พร้อมโลโก้และมาสคอต PiN TO!
 
+เว็บไซต์: https://pinto-quiz.breszdev.workers.dev
+
+GitHub (Private): https://github.com/jatura-fakduai/pinto-quiz
+
+มีบัญชีผู้จัดแรกและ Quiz เริ่มต้น 2 ชุดพร้อมใช้งาน ข้อมูลเข้าใช้เก็บในไฟล์ `pinto-access.txt` ของผู้ใช้ภายนอก repository และไม่ถูก commit
+
 ## ใช้งาน
 
 - `/` — ผู้เล่นกรอก PIN

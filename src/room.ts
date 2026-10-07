@@ -87,7 +87,16 @@ export class QuizRoom extends DurableObject<Env> {
   webSocketClose(ws: WebSocket, code: number): void { ws.close(code === 1006 ? 1000 : code); }
   async alarm(): Promise<void> {
     const r = this.room(); if (!r) return;
-    if (Date.now() >= r.expires) { for (const ws of this.ctx.getWebSockets()) ws.close(1000, 'Room expired'); await this.ctx.storage.deleteAll(); return; }
+    if (Date.now() >= r.expires) {
+      for (const ws of this.ctx.getWebSockets()) ws.close(1000, 'Room expired');
+      // Preserve the schema for subsequent requests to this still-live instance.
+      this.ctx.storage.transactionSync(() => {
+        this.ctx.storage.sql.exec('DELETE FROM answers');
+        this.ctx.storage.sql.exec('DELETE FROM players');
+        this.ctx.storage.sql.exec('DELETE FROM room');
+      });
+      return;
+    }
     if (r.phase === 'question' && Date.now() >= r.deadline) { r.phase = 'reveal'; this.save(r); this.broadcast(); }
     await this.ctx.storage.setAlarm(r.phase === 'question' ? r.deadline : r.expires);
   }
