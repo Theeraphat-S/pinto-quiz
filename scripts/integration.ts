@@ -33,8 +33,9 @@ try {
   const room = await request('/api/rooms', 'POST', { quizId: saved.data.id }, hostLogin.cookie); assert.equal(room.status, 201); const pin = String(room.data.pin);
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'start' }, otherLogin.cookie)).status, 403);
   const join = await request(`/api/rooms/${pin}/join`, 'POST', { name: 'Beer' }); assert.equal(join.status, 200);
-  const host = new Client(pin, hostLogin.cookie, true), player = new Client(pin, join.cookie); clients.push(host,player);
-  await host.state('lobby'); await player.state('lobby');
+  const joinTwo = await request(`/api/rooms/${pin}/join`, 'POST', { name: 'Second player' }); assert.equal(joinTwo.status, 200);
+  const host = new Client(pin, hostLogin.cookie, true), player = new Client(pin, join.cookie), playerTwo = new Client(pin, joinTwo.cookie); clients.push(host,player,playerTwo);
+  await host.state('lobby'); await player.state('lobby'); await playerTwo.state('lobby');
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'start' }, hostLogin.cookie)).status, 200);
   const countdown = await player.state('countdown'); assert.equal(countdown.question, undefined, 'Question must stay hidden until countdown ends');
   assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'During countdown' })).status, 409);
@@ -45,16 +46,31 @@ try {
   player.answer(before.question!.id, 0); const answered = await player.state('question', s => s.me?.answered === true); assert.equal(answered.me?.points, undefined); assert.equal(answered.me?.score, 0, 'Answer correctness must not leak via total before reveal');
   player.answer(before.question!.id, 1); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('คุณตอบข้อนี้แล้ว'));
   assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'Late' })).status, 409);
-  await request(`/api/rooms/${pin}/command`, 'POST', { command: 'reveal' }, hostLogin.cookie);
+  assert.equal(host.states.at(-1)?.phase, 'question', 'Keep accepting answers until everyone answers');
+  playerTwo.answer(before.question!.id, 1);
   const reveal = await player.state('reveal'); assert.equal(reveal.question?.correct, 0); assert.ok(reveal.me!.points! > 500); assert.equal(reveal.distribution?.[0], 1);
+  assert.ok(reveal.serverTime < before.deadline, 'Reveal immediately before the original deadline');
+  assert.equal((await playerTwo.state('reveal')).me?.points, 0);
+  assert.equal((await host.state('reveal')).answeredCount, 2);
+  playerTwo.answer(before.question!.id, 0); await new Promise(r=>setTimeout(r,100)); assert.ok(playerTwo.errors.includes('ปิดรับคำตอบแล้ว'));
   player.close(); const resumed = new Client(pin, join.cookie); clients.push(resumed); assert.equal((await resumed.state('reveal')).me?.score, reveal.me?.score);
   await request(`/api/rooms/${pin}/command`, 'POST', { command: 'next' }, hostLogin.cookie);
   const second = await resumed.state('question', s => s.questionIndex === 1); resumed.answer(before.question!.id, 1); await new Promise(r=>setTimeout(r,100)); assert.ok(resumed.errors.includes('ปิดรับคำตอบแล้ว'));
   resumed.answer(second.question!.id, 0); await resumed.state('question', s=>s.questionIndex===1&&s.me?.answered===true);
   // An alarm automatically reveals the second question after its deadline.
   await new Promise(r=>setTimeout(r,10100)); const timed = await resumed.state('reveal', s=>s.questionIndex===1); assert.equal(timed.me?.points, 0); assert.equal(timed.question?.correct, 1);
-  await request(`/api/rooms/${pin}/command`, 'POST', { command: 'next' }, hostLogin.cookie); assert.equal((await resumed.state('finished')).players.length, 1);
+  await request(`/api/rooms/${pin}/command`, 'POST', { command: 'next' }, hostLogin.cookie); assert.equal((await resumed.state('finished')).players.length, 2);
+  // A solo player also completes a question; the host can still end an incomplete question manually.
+  const soloRoom = await request('/api/rooms', 'POST', { quizId: saved.data.id }, hostLogin.cookie), soloPin = String(soloRoom.data.pin);
+  const soloJoin = await request(`/api/rooms/${soloPin}/join`, 'POST', { name: 'Solo' });
+  const solo = new Client(soloPin, soloJoin.cookie); clients.push(solo); await solo.state('lobby');
+  await request(`/api/rooms/${soloPin}/command`, 'POST', { command: 'start' }, hostLogin.cookie);
+  const soloQuestion = await solo.state('question'); solo.answer(soloQuestion.question!.id, 0);
+  const soloReveal = await solo.state('reveal'); assert.equal(soloReveal.answeredCount, 1); assert.ok(soloReveal.serverTime < soloQuestion.deadline);
+  await request(`/api/rooms/${soloPin}/command`, 'POST', { command: 'next' }, hostLogin.cookie); await solo.state('question', s=>s.questionIndex===1);
+  await request(`/api/rooms/${soloPin}/command`, 'POST', { command: 'reveal' }, hostLogin.cookie);
+  assert.equal((await solo.state('reveal', s=>s.questionIndex===1)).answeredCount, 0);
   const crossOrigin = await fetch(base + '/api/logout', { method:'POST',headers:{Origin:'https://evil.example',Cookie:hostLogin.cookie} }); assert.equal(crossOrigin.status,403);
   await request('/api/logout','POST',undefined,hostLogin.cookie); assert.equal((await request('/api/me','GET',undefined,hostLogin.cookie)).status,401);
-  console.log('PASS: login, per-account quiz isolation, host permissions, join, realtime answers, duplicate/stale rejection, no early reveal, reconnect, deadline alarm, final score, CSRF and logout.');
+  console.log('PASS: login, quiz isolation, host permissions, countdown, realtime answers, all-player/solo immediate reveal, duplicate/stale rejection, no early reveal, reconnect, deadline/manual reveal, final score, CSRF and logout.');
 } finally { clients.forEach(c=>c.close()); }

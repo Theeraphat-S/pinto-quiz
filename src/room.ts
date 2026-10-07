@@ -69,7 +69,7 @@ export class QuizRoom extends DurableObject<Env> {
     const pair = new WebSocketPair(), [client, server] = Object.values(pair); this.ctx.acceptWebSocket(server); server.serializeAttachment(attachment);
     server.send(JSON.stringify({ type: 'state', state: this.view(attachment) })); return new Response(null, { status: 101, webSocket: client });
   }
-  webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): void {
+  async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): Promise<void> {
     const a = ws.deserializeAttachment() as Attachment;
     try {
       if (typeof message !== 'string' || message.length > 512) throw new Error('ข้อความไม่ถูกต้อง');
@@ -80,7 +80,19 @@ export class QuizRoom extends DurableObject<Env> {
       if (!Number.isInteger(input.choice) || input.choice < 0 || input.choice > 3) throw new Error('ตัวเลือกไม่ถูกต้อง');
       if (this.ctx.storage.sql.exec('SELECT player FROM answers WHERE player=? AND question=?', a.id, r.index).toArray().length) throw new Error('คุณตอบข้อนี้แล้ว');
       const elapsed = Date.now() - r.started, points = scoreAnswer(input.choice === q.correct, elapsed, q.duration, q.maxScore);
-      this.ctx.storage.transactionSync(() => { this.ctx.storage.sql.exec('INSERT INTO answers VALUES(?,?,?,?,?)', a.id!, r.index, input.choice, points, elapsed); this.ctx.storage.sql.exec('UPDATE players SET score=score+? WHERE id=?', points, a.id!); });
+      let complete = false;
+      this.ctx.storage.transactionSync(() => {
+        this.ctx.storage.sql.exec('INSERT INTO answers VALUES(?,?,?,?,?)', a.id!, r.index, input.choice, points, elapsed);
+        this.ctx.storage.sql.exec('UPDATE players SET score=score+? WHERE id=?', points, a.id!);
+        const answered = this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=?', r.index).one().n;
+        const players = this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM players').one().n;
+        complete = players > 0 && answered === players;
+        if (complete) { r.phase = 'reveal'; this.save(r); }
+      });
+      if (complete) {
+        await this.ctx.storage.setAlarm(r.expires);
+        this.broadcast(); return;
+      }
       // Only the submitting player and hosts need an update. No N² broadcast for answer bursts.
       for (const socket of this.ctx.getWebSockets()) { const target = socket.deserializeAttachment() as Attachment; if (target.role === 'host' || target.id === a.id) { try { socket.send(JSON.stringify({ type: 'state', state: this.view(target) })); } catch { socket.close(1011, 'Connection error'); } } }
     } catch (error) { ws.send(JSON.stringify({ type: 'error', error: error instanceof Error ? error.message : 'ส่งคำตอบไม่ได้' })); }
