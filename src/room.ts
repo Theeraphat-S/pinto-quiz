@@ -84,7 +84,11 @@ export class QuizRoom extends DurableObject<Env> {
       for (const socket of this.ctx.getWebSockets()) { const target = socket.deserializeAttachment() as Attachment; if (target.role === 'host' || target.id === a.id) { try { socket.send(JSON.stringify({ type: 'state', state: this.view(target) })); } catch { socket.close(1011, 'Connection error'); } } }
     } catch (error) { ws.send(JSON.stringify({ type: 'error', error: error instanceof Error ? error.message : 'ส่งคำตอบไม่ได้' })); }
   }
-  webSocketClose(ws: WebSocket, code: number): void { ws.close(code === 1006 ? 1000 : code); }
+  webSocketClose(ws: WebSocket): void {
+    // A client may omit a close code, reported as reserved code 1005.
+    // Acknowledge with a valid normal closure instead of echoing reserved codes.
+    ws.close(1000, 'Connection closed');
+  }
   async alarm(): Promise<void> {
     const r = this.room(); if (!r) return;
     if (Date.now() >= r.expires) {
