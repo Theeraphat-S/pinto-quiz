@@ -17,3 +17,9 @@ test('quiz validation bounds questions and rejects invalid choices and timings',
   assert.throws(() => validateQuiz({ title: 'Empty', questions: [] }));
   assert.throws(() => validateQuiz({ ...quiz(), questions: new Array(101).fill(quiz().questions[0]) }));
 });
+test('Pinto app promo stays on unless the host explicitly turns it off', () => {
+  assert.equal(validateQuiz(quiz()).promo, true);
+  assert.equal(validateQuiz({ ...quiz(), promo: true }).promo, true);
+  assert.equal(validateQuiz({ ...quiz(), promo: false }).promo, false);
+  assert.equal(validateQuiz({ ...quiz(), promo: 'no' }).promo, true);
+});
