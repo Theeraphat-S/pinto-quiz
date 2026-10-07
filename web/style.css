@@ -55,20 +55,20 @@ kbd{font:inherit;font-weight:800;padding:0 8px;border-radius:6px;border:1px soli
 @media(prefers-reduced-motion:reduce){.sound-hint{animation:none}}
 @media(max-width:699px){.sound-hint{order:2}}
 /* Pinto app cross-promo: quiet by design, never louder than the game around it. */
-.promo-line{display:inline-flex;align-items:center;gap:10px;color:#4b5068;font-size:17px;font-weight:700;text-decoration:none}
-.promo-line img{width:40px;height:40px;flex:none}
+.promo-line{display:inline-flex;align-items:center;gap:10px;color:var(--muted);font-size:17px;font-weight:700;text-decoration:none}
+.promo-line img{flex:none}
 .promo-line b{white-space:nowrap;font-weight:inherit}
 .promo-line:hover{color:var(--navy);text-decoration:underline}
 .scene-lobby .join-card .promo-line{margin-top:18px}
-.stage-app .hostbottom p .promo-line{display:flex;margin-top:6px;font-size:15px}
-.stage-app .hostbottom p .promo-line img{width:30px;height:30px}
-.promo-card{position:relative;display:flex;gap:16px;align-items:center;background:#fffdf3;border:1px solid #dce7d0;border-radius:22px;padding:16px 18px;margin-top:30px;color:var(--navy)}
-.promo-card>img{width:64px;height:64px;border-radius:14px;flex:none}
+.hostbottom .promo-line{display:flex;margin-top:6px;font-size:15px}
+.hostbottom .promo-line img{width:30px;height:30px}
+.promo-card{position:relative;display:flex;gap:16px;align-items:center;background:var(--cream);border:1px solid #dce7d0;border-radius:22px;padding:16px 18px;margin-top:30px;color:var(--navy)}
+.promo-card>img{border-radius:14px;flex:none}
 .promo-card p{margin:0;font-size:15px;line-height:1.7}
 .promo-card .small{margin-top:4px;color:var(--muted)}
 .promo-link{display:inline-flex;align-items:center;min-height:44px;margin-top:10px;padding:0 16px;border:1.5px solid #cbd5c7;border-radius:14px;color:var(--navy);font-size:14px;font-weight:700;text-decoration:none;background:#fff}
 .promo-link:hover{border-color:var(--navy)}
-.promo-card .promo-close{position:absolute;top:4px;right:4px;min-height:44px;width:44px;padding:0;font-size:20px;line-height:1;border:none;background:transparent;color:var(--muted)}
+.promo-card .promo-close{position:absolute;top:4px;right:4px;min-height:44px;width:44px;padding:0;font-size:20px;line-height:1;border:none;color:var(--muted)}
 .promo-card:has(.promo-close){padding-right:52px}
 .player-main .promo-card{margin:22px 0 4px;background:#ffffff12;border-color:#ffffff26;color:var(--cream)}
 .player-main .promo-card p{text-align:left}

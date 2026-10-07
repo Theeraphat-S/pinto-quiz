@@ -1,5 +1,5 @@
 export type Question = { id: string; text: string; options: string[]; correct: number; explanation: string; duration: number; maxScore: number };
-export type Quiz = { id: string; title: string; music: boolean; promo?: boolean; questions: Question[]; updatedAt: number };
+export type Quiz = { id: string; title: string; music: boolean; promo: boolean; questions: Question[]; updatedAt: number };
 export type Player = { id: string; name: string; score: number };
 export type Phase = 'lobby' | 'countdown' | 'question' | 'reveal' | 'leaderboard' | 'finished' | 'closed';
 export type RoomView = { pin: string; title: string; quizId?: string; phase: Phase; music: boolean; promo: boolean; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
@@ -23,6 +23,7 @@ export function validateQuiz(value: unknown): Omit<Quiz, 'id' | 'updatedAt'> {
     if (typeof q.explanation !== 'string' || q.explanation.length > 1500) throw new Error('คำอธิบายยาวเกินไป');
     return { id: crypto.randomUUID(), text: q.text.trim(), options: q.options.map(x => String(x).trim()), correct: Number(q.correct), explanation: q.explanation.trim(), duration: Number(q.duration), maxScore: Number(q.maxScore) };
   });
-  // Quizzes saved before the Pinto app promo existed have no flag; only an explicit false hides it.
   return { title: data.title.trim(), music: data.music === true, promo: data.promo !== false, questions };
 }
+// Quizzes saved before the Pinto app promo existed have no flag; only an explicit false hides it.
+export function readQuiz(json: string): Quiz { const quiz = JSON.parse(json) as Quiz; return { ...quiz, promo: quiz.promo !== false }; }

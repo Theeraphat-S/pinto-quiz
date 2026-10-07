@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { scoreAnswer, validateQuiz } from '../src/shared';
+import { readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
 const quiz = () => ({ title: 'Quiz', music: true, questions: [{ text: 'Question?', options: ['A','B','C','D'], correct: 0, explanation: 'Because A', duration: 20, maxScore: 1000 }] });
 test('correct answers reward server-measured speed and reject deadline answers', () => {
   assert.equal(scoreAnswer(true, 0, 20, 1000), 1000);
@@ -22,4 +22,9 @@ test('Pinto app promo stays on unless the host explicitly turns it off', () => {
   assert.equal(validateQuiz({ ...quiz(), promo: true }).promo, true);
   assert.equal(validateQuiz({ ...quiz(), promo: false }).promo, false);
   assert.equal(validateQuiz({ ...quiz(), promo: 'no' }).promo, true);
+});
+test('quizzes stored before the promo flag existed read back with the promo on', () => {
+  const stored = { id: 'q', title: 'Old', music: true, questions: [], updatedAt: 1 };
+  assert.equal(readQuiz(JSON.stringify(stored)).promo, true);
+  assert.equal(readQuiz(JSON.stringify({ ...stored, promo: false })).promo, false);
 });
