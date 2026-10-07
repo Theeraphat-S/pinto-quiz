@@ -12,7 +12,8 @@
     "check": "npm run typecheck && npm test && npm run build && wrangler deploy --dry-run",
     "deploy": "npm run build && wrangler deploy",
     "account:create": "node scripts/create-account.mjs",
-    "seed": "node scripts/seed-local.mjs"
+    "seed": "node scripts/seed-local.mjs",
+    "sfx": "tsx scripts/render-sfx.ts"
   },
   "dependencies": {
     "motion": "^14.0.0",

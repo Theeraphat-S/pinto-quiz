@@ -93,7 +93,7 @@ Durable Objects ใช้ SQLite (`new_sqlite_classes`) ซึ่งรองร
 - ปิดรับคำตอบและเฉลยอัตโนมัติเมื่อหมดเวลา ด้วย Durable Object alarm
 - หากผู้เล่นทุกคนในห้องตอบครบ จะปิดข้อและเฉลยทันที; ผู้เล่นที่หลุดยังนับอยู่และใช้เวลาหมดเป็น fallback
 - คะแนนตอบถูก 50–100% ของคะแนนสูงสุดตามเวลาที่เซิร์ฟเวอร์ได้รับ; ตอบผิด/หลัง deadline = 0
-- เสียงต้นฉบับสร้างด้วย Web Audio: เตรียมตัว/เริ่ม/ส่งคำตอบ/ถูก/ผิด/จบเกม และจังหวะเร่ง 5 วินาทีสุดท้าย; ต้องกดเปิดเสียงในแต่ละการโหลดหน้า และผู้จัดปิดเสียงทั้ง Quiz ได้
+- เสียงต้นฉบับอยู่ในคีย์ F# major และ tempo เดียวกับเพลง theme: เสียงเตรียมตัว/เริ่ม/ส่งคำตอบ/ถูก/ผิด/จบเกม render จาก `scripts/render-sfx.ts` (marimba, kalimba, ไม้เคาะ; `npm run sfx` ต้องมี ffmpeg) ส่วนจังหวะนับถอยหลัง เสียง tick ทุกวินาที (เมื่อไม่มีเพลง) และเสียงเร่ง 5 วินาทีสุดท้ายเป็นเสียงไม้ที่สังเคราะห์สดด้วย Web Audio; ต้องกดเปิดเสียงในแต่ละการโหลดหน้า และผู้จัดปิดเสียงทั้ง Quiz ได้
 - ห้องมีอายุ 24 ชั่วโมง; ข้อมูลผู้เล่น/คำตอบลบเมื่อหมดอายุ
 - ตั้งเพดาน 300 ผู้เล่นต่อห้อง เป็นเพดานของแอป **ยังไม่ใช่ความจุที่ยืนยันด้วย load test 300 คน**
 - จำกัด 100 Quiz ต่อบัญชี และ 100 คำถามต่อ Quiz
@@ -106,4 +106,4 @@ Durable Objects ใช้ SQLite (`new_sqlite_classes`) ซึ่งรองร
 
 ## โครงสร้าง
 
-`web/` UI, QR และเสียง · `src/worker.ts` API · `src/accounts.ts` บัญชี/Quiz/rate limits · `src/room.ts` ห้องเกม · `src/shared.ts` validation/scoring · `scripts/` provisioning/integration · `.github/workflows/` CI/CD
+`web/` UI, QR และเสียง · `src/worker.ts` API · `src/accounts.ts` บัญชี/Quiz/rate limits · `src/room.ts` ห้องเกม · `src/shared.ts` validation/scoring · `scripts/` provisioning/integration/render เสียง · `.github/workflows/` CI/CD
