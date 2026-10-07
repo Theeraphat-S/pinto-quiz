@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-07T11:43:05.949Z",
+  "title": "Design System: PiN TO! Quiz",
+  "extensions": {
+    "colorMeta": {
+      "lid-navy": {
+        "role": "secondary",
+        "displayName": "Lid Navy",
+        "canonical": "oklch(26.6% 0.090 275.8)",
+        "tonalRamp": [
+          "#060130",
+          "#1a1d4e",
+          "#333a6f",
+          "#505890",
+          "#6e78b3",
+          "#8f9ad7",
+          "#b7c3ff",
+          "#ddeaff"
+        ]
+      },
+      "headband-green": {
+        "role": "primary",
+        "displayName": "Headband Green",
+        "canonical": "oklch(78.8% 0.158 155.1)",
+        "tonalRamp": [
+          "#001500",
+          "#003203",
+          "#005319",
+          "#007631",
+          "#009751",
+          "#2eba71",
+          "#74e29f",
+          "#acffcc"
+        ]
+      },
+      "headband-green-deep": {
+        "role": "primary",
+        "displayName": "Headband Green Deep",
+        "canonical": "oklch(51.6% 0.110 156.7)",
+        "tonalRamp": [
+          "#001500",
+          "#00320a",
+          "#005026",
+          "#0f6f43",
+          "#3b9162",
+          "#5fb382",
+          "#88ddaa",
+          "#b0ffd1"
+        ]
+      },
+      "leaf-ink": {
+        "role": "primary",
+        "displayName": "Leaf Ink",
+        "canonical": "oklch(52.0% 0.107 157.4)",
+        "tonalRamp": [
+          "#001500",
+          "#00310c",
+          "#004f28",
+          "#126f45",
+          "#3d9064",
+          "#60b284",
+          "#8addac",
+          "#b1ffd3"
+        ]
+      },
+      "timer-green": {
+        "role": "primary",
+        "displayName": "Timer Green",
+        "canonical": "oklch(66.2% 0.155 153.1)",
+        "tonalRamp": [
+          "#001500",
+          "#003200",
+          "#005315",
+          "#00752e",
+          "#00964e",
+          "#3cb96e",
+          "#79e19c",
+          "#afffc9"
+        ]
+      },
+      "rice-cream": {
+        "role": "neutral",
+        "displayName": "Rice Cream",
+        "canonical": "oklch(99.3% 0.013 97.4)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#26241d",
+          "#414038",
+          "#5f5e55",
+          "#7f7d75",
+          "#a09f95",
+          "#c9c7be",
+          "#f1efe5"
+        ]
+      },
+      "steamed-rice": {
+        "role": "neutral",
+        "displayName": "Steamed Rice",
+        "canonical": "oklch(96.7% 0.008 121.6)",
+        "tonalRamp": [
+          "#0b0c08",
+          "#232520",
+          "#3f403c",
+          "#5d5e59",
+          "#7c7e79",
+          "#9d9f9a",
+          "#c6c8c2",
+          "#edefe9"
+        ]
+      },
+      "plate-white": {
+        "role": "neutral",
+        "displayName": "Plate White",
+        "canonical": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c7c7c7",
+          "#eeeeee"
+        ]
+      },
+      "chopstick-gray": {
+        "role": "neutral",
+        "displayName": "Chopstick Gray",
+        "canonical": "oklch(51.9% 0.041 276.3)",
+        "tonalRamp": [
+          "#07091c",
+          "#1f2238",
+          "#3a3e56",
+          "#575c75",
+          "#767c96",
+          "#979db9",
+          "#c0c6e3",
+          "#e7edff"
+        ]
+      },
+      "hairline-sage": {
+        "role": "neutral",
+        "displayName": "Hairline Sage",
+        "canonical": "oklch(90.9% 0.018 134.9)",
+        "tonalRamp": [
+          "#080d06",
+          "#20261d",
+          "#3c4238",
+          "#596056",
+          "#798075",
+          "#9aa196",
+          "#c2cabe",
+          "#e9f1e5"
+        ]
+      },
+      "field-sage": {
+        "role": "neutral",
+        "displayName": "Field Sage",
+        "canonical": "oklch(86.1% 0.022 136.6)",
+        "tonalRamp": [
+          "#070d05",
+          "#1f271c",
+          "#3a4337",
+          "#586155",
+          "#778074",
+          "#98a294",
+          "#c1cbbd",
+          "#e8f2e4"
+        ]
+      },
+      "answer-mint": {
+        "role": "tertiary",
+        "displayName": "Answer Mint (A)",
+        "canonical": "oklch(89.8% 0.075 156.4)",
+        "tonalRamp": [
+          "#001300",
+          "#002e14",
+          "#154b2f",
+          "#366a4c",
+          "#568b6b",
+          "#77ad8b",
+          "#9fd7b3",
+          "#c6feda"
+        ]
+      },
+      "answer-lavender": {
+        "role": "tertiary",
+        "displayName": "Answer Lavender (B)",
+        "canonical": "oklch(87.1% 0.065 282.1)",
+        "tonalRamp": [
+          "#090525",
+          "#201f42",
+          "#3a3b61",
+          "#585982",
+          "#7779a3",
+          "#979ac6",
+          "#c0c3f1",
+          "#e7eaff"
+        ]
+      },
+      "answer-mango": {
+        "role": "tertiary",
+        "displayName": "Answer Mango (C)",
+        "canonical": "oklch(92.3% 0.084 85.3)",
+        "tonalRamp": [
+          "#1a0500",
+          "#361f00",
+          "#543b00",
+          "#735a1d",
+          "#94793f",
+          "#b69b60",
+          "#e0c488",
+          "#ffebae"
+        ]
+      },
+      "answer-peach": {
+        "role": "tertiary",
+        "displayName": "Answer Peach (D)",
+        "canonical": "oklch(89.8% 0.055 7.0)",
+        "tonalRamp": [
+          "#1c0107",
+          "#3a171f",
+          "#59333b",
+          "#795158",
+          "#9b7078",
+          "#bd9198",
+          "#e8b9c1",
+          "#ffe0e8"
+        ]
+      },
+      "podium-gold": {
+        "role": "tertiary",
+        "displayName": "Podium Gold",
+        "canonical": "oklch(92.8% 0.090 93.9)",
+        "tonalRamp": [
+          "#180700",
+          "#322100",
+          "#503e00",
+          "#6e5c14",
+          "#8f7c39",
+          "#b19e5b",
+          "#dac783",
+          "#ffeea9"
+        ]
+      },
+      "sticker-yellow": {
+        "role": "tertiary",
+        "displayName": "Sticker Yellow",
+        "canonical": "oklch(91.1% 0.117 90.8)",
+        "tonalRamp": [
+          "#1a0500",
+          "#391d00",
+          "#573a00",
+          "#765900",
+          "#977a0e",
+          "#ba9b3d",
+          "#e4c469",
+          "#ffec90"
+        ]
+      },
+      "chili-coral": {
+        "role": "tertiary",
+        "displayName": "Chili Coral",
+        "canonical": "oklch(70.3% 0.154 34.0)",
+        "tonalRamp": [
+          "#290000",
+          "#4f0000",
+          "#781200",
+          "#a23017",
+          "#c8543a",
+          "#ee765b",
+          "#ffa48a",
+          "#ffd2ba"
+        ]
+      },
+      "chili-ink": {
+        "role": "tertiary",
+        "displayName": "Chili Ink",
+        "canonical": "oklch(52.3% 0.163 29.6)",
+        "tonalRamp": [
+          "#290000",
+          "#4f0000",
+          "#790f08",
+          "#a42c20",
+          "#cc4e3f",
+          "#f27160",
+          "#ffa391",
+          "#ffd0c0"
+        ]
+      },
+      "night-lid": {
+        "role": "secondary",
+        "displayName": "Night Lid",
+        "canonical": "oklch(27.0% 0.081 273.9)",
+        "tonalRamp": [
+          "#05032c",
+          "#191e4a",
+          "#333b6a",
+          "#4f5a8b",
+          "#6e7aae",
+          "#8e9bd1",
+          "#b6c4fd",
+          "#ddecff"
+        ]
+      },
+      "night-mint": {
+        "role": "secondary",
+        "displayName": "Night Mint",
+        "canonical": "oklch(87.8% 0.136 154.3)",
+        "tonalRamp": [
+          "#001500",
+          "#003202",
+          "#005219",
+          "#007238",
+          "#229457",
+          "#4db777",
+          "#79e19f",
+          "#adffcb"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Login hero and marketing-scale moments."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles, stage questions, result headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section, card, roster and form-panel titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions and explanations; 1.7 line-height for Thai tone marks."
+      },
+      "label": {
+        "displayName": "Label / Kicker",
+        "purpose": "Tracked uppercase English kickers above Thai headlines."
+      },
+      "numeral": {
+        "displayName": "Numeral",
+        "purpose": "Room PIN; countdown goes to 125px/900."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shell-ambient",
+        "value": "0 18px 65px #1b1e5010",
+        "purpose": "Main shell only."
+      },
+      {
+        "name": "panel-ambient",
+        "value": "0 12px 35px #1b1e500c",
+        "purpose": "Form panels."
+      },
+      {
+        "name": "card-lip",
+        "value": "0 5px 0 #1b1e5008",
+        "purpose": "Quiz cards at rest."
+      },
+      {
+        "name": "button-lip",
+        "value": "0 4px 0 #207a4d",
+        "purpose": "Primary buttons: the pressable arcade lip."
+      },
+      {
+        "name": "tile-lip",
+        "value": "0 5px 0 #1b1e5015",
+        "purpose": "Stage answer tiles; correct tile uses 0 5px 0 #258050."
+      },
+      {
+        "name": "player-tile-lip",
+        "value": "0 5px 0 #0003",
+        "purpose": "Answer buttons on Night Lid."
+      },
+      {
+        "name": "mascot-drop",
+        "value": "drop-shadow(0 10px 5px #1b1e5018)",
+        "purpose": "Mascot sticker on light surfaces (filter)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-pop",
+        "value": "cubic-bezier(.2,.9,.2,1)",
+        "purpose": "Countdown digit pop (0.45s)."
+      },
+      {
+        "name": "ease-score",
+        "value": "cubic-bezier(.15,.8,.3,1.3)",
+        "purpose": "Overshooting score/result stamp (0.5s)."
+      },
+      {
+        "name": "press",
+        "value": "background .15s, transform .15s",
+        "purpose": "Button and link state transitions."
+      },
+      {
+        "name": "bar-fill",
+        "value": "width .6s ease-out",
+        "purpose": "Answer distribution bars."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation:none; transition:none",
+        "purpose": "Applied under prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tiny",
+        "value": "360px"
+      },
+      {
+        "name": "phone",
+        "value": "540px"
+      },
+      {
+        "name": "stage-stack",
+        "value": "699px"
+      },
+      {
+        "name": "tablet",
+        "value": "800px"
+      },
+      {
+        "name": "laptop",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main action with a solid green arcade lip.",
+      "html": "<button class=\"ds-btn-primary\">เข้าสู่ระบบ</button>",
+      "css": ".ds-btn-primary{font-family:Arial,'Noto Sans Thai',sans-serif;cursor:pointer;min-height:46px;padding:12px 18px;border:1.5px solid #257d50;border-radius:14px;background:#53d78c;color:#1b1e50;font-size:15px;font-weight:700;box-shadow:0 4px 0 #207a4d;transition:filter .15s,transform .15s,box-shadow .15s}.ds-btn-primary:hover{filter:brightness(1.04)}.ds-btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 #207a4d}.ds-btn-primary:focus-visible{outline:3px solid #12804a;outline-offset:3px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Navy filled alternative action.",
+      "html": "<button class=\"ds-btn-secondary\">ดูอันดับ</button>",
+      "css": ".ds-btn-secondary{font-family:Arial,'Noto Sans Thai',sans-serif;cursor:pointer;min-height:46px;padding:12px 18px;border:1.5px solid #1b1e50;border-radius:14px;background:#1b1e50;color:#fffdf3;font-size:15px;font-weight:700;transition:filter .15s}.ds-btn-secondary:hover{filter:brightness(1.15)}.ds-btn-secondary:focus-visible{outline:3px solid #12804a;outline-offset:3px}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Low-priority control, no lip.",
+      "html": "<button class=\"ds-btn-quiet\">ปิดห้อง</button>",
+      "css": ".ds-btn-quiet{font-family:Arial,'Noto Sans Thai',sans-serif;cursor:pointer;min-height:46px;padding:12px 18px;border:1.5px solid #dcded0;border-radius:14px;background:transparent;color:#1b1e50;font-size:15px;font-weight:700}.ds-btn-quiet:hover{background:#fffdf3}.ds-btn-quiet:focus-visible{outline:3px solid #12804a;outline-offset:3px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Form input in panels.",
+      "html": "<label class=\"ds-field\"><span>อีเมล</span><input placeholder=\"you@school.ac.th\"></label>",
+      "css": ".ds-field{display:block;font-family:Arial,'Noto Sans Thai',sans-serif;color:#1b1e50;font-weight:700;font-size:15px}.ds-field span{display:block;margin-bottom:8px}.ds-field input{display:block;width:100%;box-sizing:border-box;font:inherit;font-weight:400;font-size:16px;padding:15px;border:1px solid #d4ddcc;border-radius:14px;background:#f7f9f3;color:#1b1e50}.ds-field input:focus-visible{outline:3px solid #12804a;outline-offset:3px}"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "refersTo": "header",
+      "description": "Cream header with logo, wordmark and tracked sub-label.",
+      "html": "<header class=\"ds-header\"><div class=\"ds-brand\"><span class=\"ds-logo\">PT</span><div><strong>PiN TO! <em>/ QUIZ</em></strong><small>PLAY · THINK · WIN</small></div></div><a href=\"#\">สำหรับผู้จัดเกม</a></header>",
+      "css": ".ds-header{font-family:Arial,'Noto Sans Thai',sans-serif;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px 30px;background:#fffdf6;color:#1b1e50;border-bottom:1px solid #e5e7df}.ds-brand{display:flex;align-items:center;gap:13px}.ds-logo{width:48px;height:48px;border-radius:50%;background:#53d78c;display:grid;place-items:center;font-weight:900;color:#fff}.ds-brand strong{font-size:24px;letter-spacing:-1px}.ds-brand em{font-style:normal;color:#248754}.ds-brand small{display:block;letter-spacing:2px;font-size:10px;color:#777c91;margin-top:4px}.ds-header a{color:inherit;font-size:14px}.ds-header a:focus-visible{outline:3px solid #12804a;outline-offset:3px}"
+    },
+    {
+      "name": "Feature Chip",
+      "kind": "chip",
+      "refersTo": "chip-feature",
+      "description": "Pill chip in the arena banner.",
+      "html": "<span class=\"ds-chip\">⚡ ตอบเร็ว ได้แต้มเยอะ</span>",
+      "css": ".ds-chip{font-family:Arial,'Noto Sans Thai',sans-serif;display:inline-block;font-size:12px;padding:8px 12px;border:1px solid #adcfa8;background:#ffffff8a;border-radius:99px;color:#284d36}"
+    },
+    {
+      "name": "Sticker Badge",
+      "kind": "chip",
+      "refersTo": "sticker-badge",
+      "description": "Tilted celebratory badge with a lip, floating around the mascot.",
+      "html": "<span class=\"ds-sticker\">✦ LET&#39;S PLAY</span>",
+      "css": ".ds-sticker{font-family:Arial,'Noto Sans Thai',sans-serif;display:inline-block;padding:9px 14px;border-radius:99px;border:1px solid #1b1e50;background:#ffdf83;color:#1b1e50;font-size:11px;font-weight:900;box-shadow:0 4px 0 #1b1e5015;transform:rotate(6deg)}"
+    },
+    {
+      "name": "Quiz Card",
+      "kind": "card",
+      "refersTo": "card-quiz",
+      "description": "Library card with pastel gradient cover.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-cover\"><strong>คิดไว<br>ได้แต้ม!</strong><span>QUIZ / 01</span></div><div class=\"ds-body\"><h3>ความรู้รอบตัวประเทศไทย</h3><p>5 คำถาม · มีเสียง</p></div></article>",
+      "css": ".ds-card{font-family:Arial,'Noto Sans Thai',sans-serif;max-width:320px;border:1px solid #d8e0d4;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 5px 0 #1b1e5008;color:#1b1e50;transition:transform .2s}.ds-card:hover{transform:translateY(-3px)}.ds-cover{position:relative;overflow:hidden;min-height:150px;padding:25px;background:linear-gradient(125deg,#baf1ca,#77d9a0)}.ds-cover strong{display:block;font-size:30px;line-height:1.2}.ds-cover span{font-weight:800;font-size:12px}.ds-cover:after{content:'';position:absolute;width:180px;height:180px;border:1px solid #fff7;border-radius:50%;right:-15px;bottom:-50px}.ds-body{padding:23px}.ds-body h3{margin:0 0 6px;font-size:21px}.ds-body p{margin:0;color:#626781;font-size:14px}"
+    },
+    {
+      "name": "Answer Tiles",
+      "kind": "custom",
+      "refersTo": "answer-tile-stage",
+      "description": "Fixed A–D pastel answer tiles; B shown as correct.",
+      "html": "<div class=\"ds-answers\"><div class=\"ds-ans a0\"><b>A</b>เชียงใหม่</div><div class=\"ds-ans a1 ok\"><b>B</b>กรุงเทพมหานคร</div><div class=\"ds-ans a2\"><b>C</b>ขอนแก่น</div><div class=\"ds-ans a3\"><b>D</b>ภูเก็ต</div></div>",
+      "css": ".ds-answers{font-family:Arial,'Noto Sans Thai',sans-serif;display:grid;grid-template-columns:1fr 1fr;gap:14px;color:#1b1e50}.ds-ans{display:flex;align-items:center;gap:12px;min-height:80px;padding:18px;border:1px solid;border-radius:18px;box-shadow:0 5px 0 #1b1e5015;font-size:19px;font-weight:700}.ds-ans b{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#ffffffb0;font-size:14px}.a0{background:#b5edc9;border-color:#75be92}.a1{background:#cdd0ff;border-color:#989dd9}.a2{background:#ffe2a5;border-color:#d1b776}.a3{background:#ffcfd7;border-color:#d7a0ac}.ds-ans.ok{border:3px solid #258050;background:#b5edc9;box-shadow:0 5px 0 #258050}"
+    },
+    {
+      "name": "Ring Timer",
+      "kind": "custom",
+      "refersTo": "ring-timer",
+      "description": "Conic ring timer with remaining seconds.",
+      "html": "<div class=\"ds-timer\" style=\"--p:250deg\"><div>12<small>วินาที</small></div></div>",
+      "css": ".ds-timer{font-family:Arial,'Noto Sans Thai',sans-serif;width:130px;height:130px;border-radius:50%;padding:8px;box-sizing:border-box;background:conic-gradient(#2bad63 var(--p),#dae4d5 0);color:#1b1e50;font-size:54px;letter-spacing:-2px;display:grid;place-items:center;line-height:1.1}.ds-timer>div{width:100%;height:100%;border-radius:50%;background:#fffdf3;display:grid;align-content:center;text-align:center}.ds-timer small{display:block;font-size:12px;letter-spacing:0}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Lunchbox Arcade",
+    "overview": "PiN TO! Quiz is a Thai pinto lunchbox that opens up into an arcade cabinet. The box supplies the warmth: rice-cream surfaces, a navy lid, a green headband, and the mascot's soft sticker shading. The arcade supplies the pulse: buttons with a solid lip that sinks when pressed, a 3–2–1 countdown that pops, a ring timer that turns chili-coral in the final seconds, confetti, and a podium. Every screen should feel friendly enough for a classroom and exciting enough to make students lean toward the projector.",
+    "keyCharacteristics": [
+      "Rice-cream and white surfaces over a sage-tinted page washed with faint mint and lavender gradients",
+      "Lid Navy (#1b1e50) carries all ink and the mascot's outline. Pure black is never used.",
+      "Controls have a solid 4–5px offset lip that reads as a physical arcade button",
+      "Four fixed pastel answer colours (mint, lavender, mango, peach) that never change their order",
+      "The mascot appears on every major surface as a sticker, never as decoration in the background",
+      "Thai-first typography with heavy 900 headlines and a relaxed 1.7 body line-height for Thai tone marks"
+    ],
+    "rules": [
+      {
+        "name": "The Fixed Answer Order Rule",
+        "body": "A is always mint, B lavender, C mango and D peach, on every surface. Students learn the colours. Never reshuffle or reuse them for anything else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Saved Saturation Rule",
+        "body": "The palette stays pastel. Full-strength colour is reserved for state: green for correct, coral for urgent, gold for first place.",
+        "section": "colors"
+      },
+      {
+        "name": "The English Kicker Rule",
+        "body": "Small tracked uppercase English labels sit above Thai headlines as an arcade-style marker. The meaning always lives in the Thai line. The kicker is flavour and is never the only label.",
+        "section": "typography"
+      },
+      {
+        "name": "The Lip Means Press Rule",
+        "body": "A solid, unblurred offset shadow only goes on things that can be pressed or that celebrate (buttons, answer tiles, sticker badges). Static containers get soft ambient shadows or none.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Lid Navy (#1b1e50) for every line of ink and outline. It is the mascot's line colour.",
+      "Do keep A/B/C/D mapped to mint, lavender, mango and peach on every surface.",
+      "Do put a 4–5px solid lip only on pressable or celebratory elements.",
+      "Do place the mascot as a sticker with a soft drop shadow on each major surface. Change its pose or scale, never its identity.",
+      "Do keep Thai body text at 1.7 line-height and headings at 1.22–1.4 so tone marks never collide.",
+      "Do keep the host stage on one screen from 700×500 upward, sized for reading across a classroom.",
+      "Do respect `prefers-reduced-motion`: countdown pops, floating mascots and confetti all switch off."
+    ],
+    "donts": [
+      "Don't use loud saturated Kahoot-style primaries (pure red, blue, yellow, green blocks) for answers or backgrounds.",
+      "Don't drift into cold grey-blue corporate SaaS styling: flat grey cards, blue primary buttons, no mascot.",
+      "Don't style the player's dark screen as neon gaming. There are no electric glows, scanlines or black backgrounds. Night Lid stays a deep navy with soft mint.",
+      "Don't use pure black (#000) for text or shadows. Shadows are navy at low opacity.",
+      "Don't spend Chili Coral or Podium Gold on decoration. They mean urgent and first place."
+    ]
+  }
+}

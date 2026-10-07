@@ -2,7 +2,7 @@ export type Question = { id: string; text: string; options: string[]; correct: n
 export type Quiz = { id: string; title: string; music: boolean; questions: Question[]; updatedAt: number };
 export type Player = { id: string; name: string; score: number };
 export type Phase = 'lobby' | 'countdown' | 'question' | 'reveal' | 'leaderboard' | 'finished' | 'closed';
-export type RoomView = { pin: string; title: string; phase: Phase; music: boolean; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
+export type RoomView = { pin: string; title: string; quizId?: string; phase: Phase; music: boolean; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
 export function scoreAnswer(correct: boolean, elapsedMs: number, durationSeconds: number, maximum: number): number {
   if (!correct || elapsedMs < 0 || elapsedMs >= durationSeconds * 1000) return 0;
   return Math.round(maximum * (1 - .5 * elapsedMs / (durationSeconds * 1000)));

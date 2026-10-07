@@ -1,6 +1,8 @@
 let observer: ResizeObserver | null = null;
 let frame = 0;
 let cleanup: (() => void) | null = null;
+// Scenes are authored on a fixed canvas so type sizes mean the same thing on every projector.
+const DESIGN_WIDTH = 1280, DESIGN_HEIGHT = 640;
 
 export function stopStageFit(): void {
   observer?.disconnect(); observer = null;
@@ -9,8 +11,8 @@ export function stopStageFit(): void {
   delete document.body.dataset.stageFit;
 }
 
-// Keep a complete host scene inside the projector viewport, including long content.
-// Normal phone layouts remain at full text size and can scroll naturally.
+// Scale the whole host scene up or down to fill the viewport below the stage bar.
+// Phone-sized host windows keep the normal flowing layout and can scroll.
 export function fitStage(): void {
   const viewport = document.querySelector<HTMLElement>('.stage-viewport');
   const canvas = document.querySelector<HTMLElement>('.stage-canvas');
@@ -23,12 +25,11 @@ export function fitStage(): void {
       document.body.dataset.stageFit = String(fitted);
       viewport.classList.toggle('fitted', fitted);
       if (!fitted) { viewport.style.height = ''; canvas.style.transform = ''; return; }
-      const main = viewport.parentElement!;
-      const padding = parseFloat(getComputedStyle(main).paddingBottom);
-      const available = Math.max(100, innerHeight - viewport.getBoundingClientRect().top - padding - 12);
+      const available = Math.max(100, innerHeight - viewport.getBoundingClientRect().top);
       viewport.style.height = `${available}px`;
-      const scale = Math.min(1, available / Math.max(1, canvas.scrollHeight));
-      canvas.style.transform = `translateX(-50%) scale(${scale})`;
+      const height = Math.max(DESIGN_HEIGHT, canvas.scrollHeight);
+      const scale = Math.min(viewport.clientWidth / DESIGN_WIDTH, available / height);
+      canvas.style.transform = `translate(-50%, ${Math.max(0, (available - height * scale) / 2)}px) scale(${scale})`;
       window.scrollTo(0, 0);
     });
   };

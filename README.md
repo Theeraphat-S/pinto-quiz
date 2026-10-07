@@ -34,6 +34,12 @@ npm run dev
 เปิด `http://localhost:8787` การแก้ frontend ต้อง `npm run build` อีกครั้ง หรือเปิด Vite แยกด้วย `npx vite --host 127.0.0.1` (proxy API ไป 8787)
 
 ```sh
+npm run seed
+```
+
+จำลองฐานข้อมูลในเครื่อง (ต้องเปิด `npm run dev` ไว้): สร้างบัญชี `demo@pinto.local` / `pinto-demo-2026` (Quiz 3 ชุด) และ `host2@pinto.local` / `pinto-host2-2026` (Quiz 1 ชุด) รันซ้ำได้โดยไม่สร้างซ้ำ ใช้ได้เฉพาะ localhost ล้างข้อมูลทั้งหมดได้ด้วยการลบ `.wrangler/state`
+
+```sh
 npm run account:create
 ```
 

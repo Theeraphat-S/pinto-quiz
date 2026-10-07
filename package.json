@@ -11,7 +11,8 @@
     "test:integration": "tsx scripts/integration.ts",
     "check": "npm run typecheck && npm test && npm run build && wrangler deploy --dry-run",
     "deploy": "npm run build && wrangler deploy",
-    "account:create": "node scripts/create-account.mjs"
+    "account:create": "node scripts/create-account.mjs",
+    "seed": "node scripts/seed-local.mjs"
   },
   "dependencies": {
     "qrcode": "^1.5.4"
