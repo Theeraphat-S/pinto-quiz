@@ -10,7 +10,7 @@ const STYLE = 'bold';
 const NAMES = [
   'add', 'edit-2', 'trash', 'play', 'timer', 'clock', 'music', 'volume-high', 'volume-slash', 'maximize-4',
   'close-circle', 'tick-circle', 'logout-02', 'login-02', 'arrow-left-02', 'arrow-up-01', 'arrow-down-01',
-  'people', 'crown', 'cup', 'medal-star', 'lamp-on', 'scan', 'refresh-circle', 'save-2', 'minus-circle', 'danger',
+  'people', 'crown', 'cup', 'medal-star', 'lamp-on', 'scan', 'refresh-circle', 'save-2', 'minus-circle', 'danger', 'flash', 'user', 'home-2',
 ];
 
 const manifest = JSON.parse(fs.readFileSync(path.join(dist, 'manifest.json'), 'utf8'));

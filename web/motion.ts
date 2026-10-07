@@ -7,8 +7,8 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 export const springs = {
   // UI settling into place: quick, no overshoot.
   snappy: { type: 'spring', duration: 0.35, bounce: 0 },
-  // Moments worth cheering: a visible bounce.
-  celebrate: { type: 'spring', duration: 0.6, bounce: 0.4 },
+  // Moments worth cheering: a light bounce, never a wobble.
+  celebrate: { type: 'spring', duration: 0.6, bounce: 0.25 },
 } satisfies Record<string, AnimationOptions>;
 
 const running = new Set<AnimationPlaybackControls>();
@@ -81,7 +81,7 @@ export function revealIn(root: ParentNode): void {
 
 // Player's own result: the stamp bounces in, then the points count up.
 export function resultIn(root: ParentNode, points: number): void {
-  play(root.querySelector('.result-stamp'), { opacity: [0, 1], scale: [0.3, 1], rotate: [-25, 0] }, springs.celebrate);
+  play(root.querySelector('.result-stamp'), { opacity: [0, 1], scale: [0.4, 1], rotate: [-12, 0] }, springs.celebrate);
   countUp(root.querySelector('.resultpoints strong'), points, n => `+${n.toLocaleString()}`, 0.25);
 }
 
