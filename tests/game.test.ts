@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
+import { normalizePin, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
 const quiz = () => ({ title: 'Quiz', music: true, questions: [{ text: 'Question?', options: ['A','B','C','D'], correct: 0, explanation: 'Because A', duration: 20, maxScore: 1000 }] });
 test('correct answers reward server-measured speed and reject deadline answers', () => {
   assert.equal(scoreAnswer(true, 0, 20, 1000), 1000);
@@ -33,4 +33,12 @@ test('promo taglines are stable for a seed and cycle through every line', () => 
   assert.deepEqual(PROMO_TAGLINES.map((_, i) => promoTagline(i)), PROMO_TAGLINES);
   assert.equal(promoTagline(PROMO_TAGLINES.length), PROMO_TAGLINES[0]);
   assert.equal(promoTagline(-1), PROMO_TAGLINES[PROMO_TAGLINES.length - 1]);
+});
+test('pasted PINs keep only six digits', () => {
+  assert.equal(normalizePin('115 695'), '115695');
+  assert.equal(normalizePin('115-695'), '115695');
+  assert.equal(normalizePin(' 115 695 '), '115695');
+  assert.equal(normalizePin('๑๑๕๖๙๕'), '115695');
+  assert.equal(normalizePin('PIN: 115 695 7'), '115695');
+  assert.equal(normalizePin('11 5'), '115');
 });

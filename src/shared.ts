@@ -26,6 +26,8 @@ export function validateQuiz(value: unknown): Omit<Quiz, 'id' | 'updatedAt'> {
   return { title: data.title.trim(), music: data.music === true, promo: data.promo !== false, questions };
 }
 // Quizzes saved before the Pinto app promo existed have no flag; only an explicit false hides it.
+// Pasted PINs arrive as "115 695", "115-695" or in Thai digits; keep only the six digits.
+export function normalizePin(value: string): string { return value.replace(/[๐-๙]/g, d => String(d.charCodeAt(0) - 0x0e50)).replace(/\D/g, '').slice(0, 6); }
 export function readQuiz(json: string): Quiz { const quiz = JSON.parse(json) as Quiz; return { ...quiz, promo: quiz.promo !== false }; }
 export const PROMO_TAGLINES = ['หิวแล้วใช่ไหม? ดูรีวิวร้านอร่อยจากคนไทยได้ที่ Pinto', 'เที่ยวไหนดี? เพื่อน ๆ รีวิวไว้ให้แล้วบน Pinto', 'แฟชั่น บิวตี้ ไลฟ์สไตล์ ครบในแอปเดียว — Pinto', 'ชอบแชร์? โพสต์รีวิวของคุณบน Pinto ชุมชนรีวิวของคนไทย'];
 // Deterministic for a seed, so callers seeding from shared room state show one line to the whole room without flicker.
