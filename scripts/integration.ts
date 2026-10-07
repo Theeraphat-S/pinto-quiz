@@ -74,6 +74,13 @@ try {
   const newEmail = `renamed-${suffix}@example.com`, newPassword = 'Test@2026';
   assert.equal((await request('/api/accounts/change-login','POST',{currentEmail:email,email:newEmail,password:newPassword},hostLogin.cookie)).status,403);
   assert.equal((await request('/api/accounts/change-login','POST',{currentEmail:email,email:other,password:newPassword},'',true)).status,409);
+  for (let i = 0; i < 12; i++) {
+    const repeat = await request('/api/login','POST',{email,password});
+    assert.equal(repeat.status,200,'Successful sign-ins must not exhaust the account limit');
+    await request('/api/logout','POST',undefined,repeat.cookie);
+  }
+  for (let i = 0; i < 10; i++) assert.equal((await request('/api/login','POST',{email,password:'wrong'})).status,401);
+  assert.equal((await request('/api/login','POST',{email,password})).status,429,'Repeated failed attempts lock the account');
   assert.equal((await request('/api/accounts/change-login','POST',{currentEmail:email,email:newEmail,password:newPassword},'',true)).status,200);
   assert.equal((await request('/api/me','GET',undefined,hostLogin.cookie)).status,401, 'Changing credentials revokes old sessions');
   assert.equal((await request('/api/login','POST',{email,password})).status,401);

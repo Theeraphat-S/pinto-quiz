@@ -12,6 +12,11 @@ async function guard(request: Request, env: Env, kind: string, limit: number, wi
   const ip = request.headers.get('CF-Connecting-IP') || 'local';
   if (!await env.GUARDS.getByName(await digest(kind + ':' + ip)).allow(limit, window)) throw new HttpError(429, 'ลองใหม่อีกครั้งภายหลัง');
 }
+async function resetLoginLimits(request: Request, env: Env, id: string) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'local';
+  await env.GUARDS.getByName('login:' + id).reset();
+  await env.GUARDS.getByName(await digest('login-ip:' + ip)).reset();
+}
 function json(value: unknown, status = 200, extra?: HeadersInit): Response { return Response.json(value, { status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...extra } }); }
 async function route(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url), path = url.pathname, method = request.method;
@@ -31,6 +36,7 @@ async function route(request: Request, env: Env): Promise<Response> {
     // Email addresses are aliases; storage identity and room ownership stay stable.
     if (emailId !== id && !await env.ACCOUNTS.getByName(emailId).setLoginTarget(id)) throw new HttpError(409, 'อีเมลนี้มีบัญชีอยู่แล้ว');
     await account.updateLogin(email, input.password);
+    await resetLoginLimits(request, env, id);
     return json({ ok: true, email });
   }
   if (path === '/api/accounts' && method === 'POST') {
@@ -50,6 +56,7 @@ async function route(request: Request, env: Env): Promise<Response> {
     if (!await env.GUARDS.getByName('login:' + id).allow(10, 900000)) throw new HttpError(429, 'ลองใหม่อีกครั้งภายหลัง');
     const user = await env.ACCOUNTS.getByName(id).login(input.password, email);
     if (!user) throw new HttpError(401, 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+    await resetLoginLimits(request, env, id);
     return json({ email: user.email, name: user.name }, 200, { 'Set-Cookie': cookie('pt_session', id + '.' + user.token, request) });
   }
   if (path === '/api/logout' && method === 'POST') { const s = await session(request, env); await s.account.logout(s.token); return json({ ok: true }, 200, { 'Set-Cookie': cookie('pt_session', '', request, 0) }); }

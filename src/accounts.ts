@@ -71,5 +71,6 @@ export class RateGuard extends DurableObject<Env> {
     if (row.count >= limit) return false;
     this.ctx.storage.sql.exec('UPDATE attempts SET count=count+1 WHERE id=1'); return true;
   }
+  async reset(): Promise<void> { this.ctx.storage.sql.exec('DELETE FROM attempts'); await this.ctx.storage.deleteAlarm(); }
   async alarm(): Promise<void> { this.ctx.storage.sql.exec('DELETE FROM attempts'); }
 }
