@@ -36,7 +36,12 @@ try {
   const host = new Client(pin, hostLogin.cookie, true), player = new Client(pin, join.cookie); clients.push(host,player);
   await host.state('lobby'); await player.state('lobby');
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'start' }, hostLogin.cookie)).status, 200);
+  const countdown = await player.state('countdown'); assert.equal(countdown.question, undefined, 'Question must stay hidden until countdown ends');
+  assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'During countdown' })).status, 409);
+  player.answer('not-yet-open', 0); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('ปิดรับคำตอบแล้ว'));
+  const countdownHost = await host.state('countdown'); assert.equal(countdownHost.deadline, countdown.deadline, 'Host and players share a countdown deadline');
   const before = await player.state('question'); assert.equal(before.question?.correct, undefined); assert.equal(before.question?.explanation, undefined);
+  assert.ok(before.deadline - before.serverTime > 9500, 'Full answer time starts after countdown');
   player.answer(before.question!.id, 0); const answered = await player.state('question', s => s.me?.answered === true); assert.equal(answered.me?.points, undefined); assert.equal(answered.me?.score, 0, 'Answer correctness must not leak via total before reveal');
   player.answer(before.question!.id, 1); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('คุณตอบข้อนี้แล้ว'));
   assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'Late' })).status, 409);

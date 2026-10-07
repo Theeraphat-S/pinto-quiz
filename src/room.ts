@@ -37,14 +37,14 @@ export class QuizRoom extends DurableObject<Env> {
   }
   async command(owner: string, command: string): Promise<void> {
     const r = this.requireRoom(); if (r.owner !== owner) throw new HttpError(403, 'คุณไม่ได้เป็นผู้จัดห้องนี้');
-    if (command === 'start' && r.phase === 'lobby') { r.index = 0; r.phase = 'question'; }
+    if (command === 'start' && r.phase === 'lobby') { r.index = 0; r.phase = 'countdown'; }
     else if (command === 'reveal' && r.phase === 'question') r.phase = 'reveal';
     else if (command === 'leaderboard' && r.phase === 'reveal') r.phase = 'leaderboard';
-    else if (command === 'next' && (r.phase === 'reveal' || r.phase === 'leaderboard')) { r.index++; r.phase = r.index >= r.quiz.questions.length ? 'finished' : 'question'; }
+    else if (command === 'next' && (r.phase === 'reveal' || r.phase === 'leaderboard')) { r.index++; r.phase = r.index >= r.quiz.questions.length ? 'finished' : 'countdown'; }
     else if (command === 'close') r.phase = 'closed';
     else throw new HttpError(409, 'คำสั่งนี้ใช้ไม่ได้ในช่วงเกมปัจจุบัน');
-    if (r.phase === 'question') { r.started = Date.now(); r.deadline = r.started + r.quiz.questions[r.index].duration * 1000; }
-    this.save(r); await this.ctx.storage.setAlarm(r.phase === 'question' ? r.deadline : r.expires); this.broadcast();
+    if (r.phase === 'countdown') { r.started = 0; r.deadline = Date.now() + 3000; }
+    this.save(r); await this.ctx.storage.setAlarm(r.phase === 'countdown' ? r.deadline : r.expires); this.broadcast();
   }
   private view(a: Attachment): RoomView {
     const r = this.requireRoom(); const q = r.quiz.questions[r.index];
@@ -52,7 +52,8 @@ export class QuizRoom extends DurableObject<Env> {
     const answeredCount = this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=?', r.index).one().n;
     const reveal = ['reveal', 'leaderboard', 'finished'].includes(r.phase);
     const v: RoomView = { pin: r.pin, title: r.quiz.title, music: r.quiz.music, phase: r.phase, questionIndex: r.index, questionCount: r.quiz.questions.length, serverTime: Date.now(), deadline: r.deadline, players: a.role === 'host' || reveal ? players : [], playerCount: players.length, answeredCount };
-    if (q) { v.question = { id: q.id, text: q.text, options: q.options, duration: q.duration, maxScore: q.maxScore }; if (reveal) { v.question.correct = q.correct; v.question.explanation = q.explanation; v.distribution = q.options.map((_, i) => this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=? AND choice=?', r.index, i).one().n); } }
+    // Do not publish question contents or accept answers during the shared 3-2-1 countdown.
+    if (q && r.phase !== 'countdown') { v.question = { id: q.id, text: q.text, options: q.options, duration: q.duration, maxScore: q.maxScore }; if (reveal) { v.question.correct = q.correct; v.question.explanation = q.explanation; v.distribution = q.options.map((_, i) => this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=? AND choice=?', r.index, i).one().n); } }
     if (a.id) { const player = players.find(p => p.id === a.id); const answer = this.ctx.storage.sql.exec<AnswerRow>('SELECT choice,points,elapsed FROM answers WHERE player=? AND question=?', a.id, r.index).toArray()[0]; if (player) v.me = { ...player, score: player.score - (!reveal && answer ? answer.points : 0), answered: !!answer, ...(answer ? { choice: answer.choice } : {}), ...(answer && reveal ? { points: answer.points, elapsed: answer.elapsed } : {}) }; }
     return v;
   }
@@ -101,7 +102,11 @@ export class QuizRoom extends DurableObject<Env> {
       });
       return;
     }
-    if (r.phase === 'question' && Date.now() >= r.deadline) { r.phase = 'reveal'; this.save(r); this.broadcast(); }
-    await this.ctx.storage.setAlarm(r.phase === 'question' ? r.deadline : r.expires);
+    if (r.phase === 'countdown' && Date.now() >= r.deadline) {
+      r.phase = 'question'; r.started = Date.now();
+      r.deadline = r.started + r.quiz.questions[r.index].duration * 1000;
+      this.save(r); this.broadcast();
+    } else if (r.phase === 'question' && Date.now() >= r.deadline) { r.phase = 'reveal'; this.save(r); this.broadcast(); }
+    await this.ctx.storage.setAlarm(r.phase === 'question' || r.phase === 'countdown' ? r.deadline : r.expires);
   }
 }
