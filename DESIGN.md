@@ -263,6 +263,17 @@ The live "ตอบแล้ว" count is the room's scoreboard while students t
 ### Podium (signature)
 Three steps with medals. First place is tallest in Podium Gold, second is lavender, and third is apricot (#f5dcc9). Step numerals use deep inks (#6b4e0e, #4f3d7a, #7a4a28) so they clear contrast. Ties share a rank shown as "=2". The final results raise the podium 3 → 2 → 1 once, with a "CHAMPION!" sticker on the mascot. Places 4–8 sit beside it, and the top three are never repeated in the list.
 
+## Motion
+
+Motion is split in two. Ambient loops live in `web/style.css`: floating mascots, ready dots, the urgent ring pulse and confetti. One-off moments that need sequencing or live numbers use [Motion](https://motion.dev) (`motion` package, vanilla `animate`) through `web/motion.ts`. Admin screens stay still.
+
+- **Two springs only.** `snappy` (0.35s, no bounce) moves UI into place: scene entrances, answer tiles, faded tiles. `celebrate` (0.6s, bounce 0.4) is for moments worth cheering: the correct tile, the result stamp, a new name in the lobby, the tapped answer.
+- **Scenes enter once.** A room screen is keyed by role, PIN, phase and question. Entrance motion plays only when that key changes. Updates inside a scene (answered count, lobby roster) swap only the `data-live` element and never replay the entrance. CSS entrance animations are gated behind `#app[data-entering]`.
+- **Leaving is short.** The old scene fades out in 150ms before the next one comes in. The host can advance at any moment, and anything still moving stops at once.
+- **The markup holds the final state.** Animations play from a start state back to what the stylesheet already shows, then hand their properties back. Numbers count up from zero to the value already in the markup.
+- **Reveal choreography.** The correct tile lands with the reveal sound (celebrate). Wrong tiles fade at the same time. Then the tallies fill and the counts climb in A–D order. The whole sequence finishes in about 1.5s.
+- **Reduced motion is handled once.** Every Motion call goes through `play()`/`countUp()`, which skip the animation entirely and leave the final state when `prefers-reduced-motion: reduce` is set.
+
 ## Do's and Don'ts
 
 ### Do:
