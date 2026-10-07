@@ -71,6 +71,18 @@ try {
   await request(`/api/rooms/${soloPin}/command`, 'POST', { command: 'reveal' }, hostLogin.cookie);
   assert.equal((await solo.state('reveal', s=>s.questionIndex===1)).answeredCount, 0);
   const crossOrigin = await fetch(base + '/api/logout', { method:'POST',headers:{Origin:'https://evil.example',Cookie:hostLogin.cookie} }); assert.equal(crossOrigin.status,403);
-  await request('/api/logout','POST',undefined,hostLogin.cookie); assert.equal((await request('/api/me','GET',undefined,hostLogin.cookie)).status,401);
-  console.log('PASS: login, quiz isolation, host permissions, countdown, realtime answers, all-player/solo immediate reveal, duplicate/stale rejection, no early reveal, reconnect, deadline/manual reveal, final score, CSRF and logout.');
+  const newEmail = `renamed-${suffix}@example.com`, newPassword = 'Test@2026';
+  assert.equal((await request('/api/accounts/change-login','POST',{currentEmail:email,email:newEmail,password:newPassword},hostLogin.cookie)).status,403);
+  assert.equal((await request('/api/accounts/change-login','POST',{currentEmail:email,email:other,password:newPassword},'',true)).status,409);
+  assert.equal((await request('/api/accounts/change-login','POST',{currentEmail:email,email:newEmail,password:newPassword},'',true)).status,200);
+  assert.equal((await request('/api/me','GET',undefined,hostLogin.cookie)).status,401, 'Changing credentials revokes old sessions');
+  assert.equal((await request('/api/login','POST',{email,password})).status,401);
+  assert.equal((await request('/api/login','POST',{email,password:newPassword})).status,401);
+  assert.equal((await request('/api/login','POST',{email:newEmail,password})).status,401);
+  const renamed = await request('/api/login','POST',{email:newEmail,password:newPassword}); assert.equal(renamed.status,200); assert.equal(renamed.data.email,newEmail);
+  assert.deepEqual((await request('/api/quizzes/'+saved.data.id,'GET',undefined,renamed.cookie)).data,saved.data,'Quiz IDs and contents survive credential changes');
+  assert.equal((await request(`/api/rooms/${soloPin}/command`,'POST',{command:'close'},renamed.cookie)).status,200,'Existing room ownership survives email changes');
+  assert.equal((await request('/api/accounts','POST',{email:newEmail,name:'Duplicate',password},'',true)).status,409,'Login aliases cannot be provisioned as a second account');
+  await request('/api/logout','POST',undefined,renamed.cookie); assert.equal((await request('/api/me','GET',undefined,renamed.cookie)).status,401);
+  console.log('PASS: login, quiz isolation, host permissions, countdown, realtime answers, immediate reveal, deadline/manual reveal, CSRF, credential changes preserve quizzes/rooms, old credentials/sessions revoked, alias collisions rejected and logout.');
 } finally { clients.forEach(c=>c.close()); }

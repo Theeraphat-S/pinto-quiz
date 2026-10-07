@@ -19,6 +19,20 @@ async function route(request: Request, env: Env): Promise<Response> {
   if (!['GET', 'POST', 'PUT', 'DELETE'].includes(method)) throw new HttpError(405, 'Method not allowed');
   if (method !== 'GET' || request.headers.get('Upgrade')?.toLowerCase() === 'websocket') assertOrigin(request);
   if (path === '/api/health') return json({ ok: true, app: 'pinto-quiz' });
+  if (path === '/api/accounts/change-login' && method === 'POST') {
+    await guard(request, env, 'change-login', 10, 60000);
+    if (!env.SETUP_TOKEN || !safeEqual(request.headers.get('Authorization') || '', 'Bearer ' + env.SETUP_TOKEN)) throw new HttpError(403, 'ไม่มีสิทธิ์เปลี่ยนบัญชี');
+    const input = await readJSON(request), currentEmail = emailAddress(input.currentEmail), email = emailAddress(input.email);
+    if (typeof input.password !== 'string' || input.password.length < 8 || input.password.length > 128) throw new HttpError(400, 'รหัสผ่านต้องมี 8–128 ตัวอักษร');
+    const currentId = await digest(currentEmail), id = await env.ACCOUNTS.getByName(currentId).loginTarget() || currentId;
+    const account = env.ACCOUNTS.getByName(id);
+    if (!await account.identity()) throw new HttpError(404, 'ไม่พบบัญชีผู้จัด');
+    const emailId = await digest(email);
+    // Email addresses are aliases; storage identity and room ownership stay stable.
+    if (emailId !== id && !await env.ACCOUNTS.getByName(emailId).setLoginTarget(id)) throw new HttpError(409, 'อีเมลนี้มีบัญชีอยู่แล้ว');
+    await account.updateLogin(email, input.password);
+    return json({ ok: true, email });
+  }
   if (path === '/api/accounts' && method === 'POST') {
     await guard(request, env, 'provision', 20, 60000);
     if (!env.SETUP_TOKEN || !safeEqual(request.headers.get('Authorization') || '', 'Bearer ' + env.SETUP_TOKEN)) throw new HttpError(403, 'ไม่มีสิทธิ์สร้างบัญชี');
@@ -32,9 +46,9 @@ async function route(request: Request, env: Env): Promise<Response> {
     await guard(request, env, 'login-ip', 20, 900000);
     const input = await readJSON(request), email = emailAddress(input.email);
     if (typeof input.password !== 'string' || input.password.length > 128) throw new HttpError(400, 'รหัสผ่านไม่ถูกต้อง');
-    const id = await digest(email);
+    const emailId = await digest(email), id = await env.ACCOUNTS.getByName(emailId).loginTarget() || emailId;
     if (!await env.GUARDS.getByName('login:' + id).allow(10, 900000)) throw new HttpError(429, 'ลองใหม่อีกครั้งภายหลัง');
-    const user = await env.ACCOUNTS.getByName(id).login(input.password);
+    const user = await env.ACCOUNTS.getByName(id).login(input.password, email);
     if (!user) throw new HttpError(401, 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
     return json({ email: user.email, name: user.name }, 200, { 'Set-Cookie': cookie('pt_session', id + '.' + user.token, request) });
   }

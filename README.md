@@ -93,6 +93,8 @@ Durable Objects ใช้ SQLite (`new_sqlite_classes`) ซึ่งรองร
 - จำกัด 100 Quiz ต่อบัญชี และ 100 คำถามต่อ Quiz
 - เก็บคำตอบและคะแนนใน SQLite; WebSocket ใช้ Hibernation และ ping auto-response
 - Session ผู้จัด 24 ชั่วโมง ผ่าน HttpOnly/SameSite cookie; HTTPS ใช้ Secure cookie; เก็บ token เป็น hash
+- ผู้ดูแลที่ถือ `SETUP_TOKEN` เปลี่ยนอีเมล/รหัสผ่านผ่าน `POST /api/accounts/change-login` ได้ (`currentEmail`, `email`, `password`); endpoint นี้ไม่เปิดใน UI สมัครสมาชิก และเปลี่ยนแล้วจะยกเลิกทุก session เดิม
+- เปลี่ยนข้อมูล Login โดยใช้ alias ของอีเมล เพื่อคง storage, ID ของ Quiz และเจ้าของห้องเดิม; รหัสผ่านสำหรับ endpoint เปลี่ยนบัญชีมี 8–128 ตัวอักษร ส่วนสร้างบัญชีใหม่ยังเป็น 12–128
 - รองรับหลายบัญชีด้วย storage แยกตาม account; สมัครสาธารณะ, reset password, email verification และ billing ยังไม่ได้เปิด
 - ถ้าใช้จากหลายอุปกรณ์จริง ให้ใช้ URL ที่ deploy แล้ว หรือ development URL ที่โทรศัพท์เข้าถึงได้; QR localhost เปิดบนมือถืออื่นไม่ได้
 
