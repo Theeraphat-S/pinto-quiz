@@ -1,0 +1,110 @@
+/* Sticker Lunchbox foundation: tokens, type, and the controls every screen shares. See DESIGN.md. */
+:root {
+  --navy: #1b1e50;
+  --green: #53d78c;
+  --green-deep: #207a4d;
+  --leaf: #1f7046;
+  --cream: #fffdf3;
+  --plate: #ffffff;
+  --muted: #585d7a;
+  --lid-gray: #6b6f9c;
+  --field: #c9cfc3;
+  --a0: #b5edc9;
+  --a1: #cdd0ff;
+  --a2: #ffe2a5;
+  --a3: #ffcfd7;
+  --gold: #fbe7a2;
+  --coral: #ef775c;
+  --chili: #b5382b;
+  --night: #1b214d;
+  --night-mint: #89f1ae;
+
+  --ink: 3px solid var(--navy);
+  --lip: 0 4px 0 var(--navy);
+  --r-control: 10px;
+  --r-box: 14px;
+
+  --font-body: 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-head: 'Mitr', 'Anuphan', 'Noto Sans Thai', sans-serif;
+  --font-num: 'Chakra Petch', 'Anuphan', sans-serif;
+
+  font-family: var(--font-body);
+  color: var(--navy);
+  background: var(--cream);
+}
+
+body { background: var(--cream); }
+body, button, input, textarea, select { font-family: var(--font-body); }
+h1, h2 { font-family: var(--font-head); letter-spacing: 0; color: var(--navy); }
+h1 { font-weight: 600; line-height: 1.25; }
+h2 { font-weight: 500; line-height: 1.35; }
+p { color: var(--muted); }
+
+.i { width: 20px; height: 20px; flex: none; display: block; }
+
+/* Buttons: outlined like the mascot, with a lip that sinks when pressed. */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 18px;
+  border: var(--ink);
+  border-radius: var(--r-control);
+  background: var(--plate);
+  color: var(--navy);
+  box-shadow: var(--lip);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  filter: none;
+  transition: transform .08s, box-shadow .08s;
+}
+button:not(:disabled):hover { filter: none; background-color: #f6f8f2; }
+button:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--navy); }
+.primary, button.primary { background: var(--green); border-color: var(--navy); box-shadow: var(--lip); }
+.primary:not(:disabled):hover { background: #63e099; }
+.secondary { background: var(--navy); color: var(--cream); }
+.quiet { background: transparent; border-color: var(--field); box-shadow: none; }
+.quiet:not(:disabled):active { transform: none; box-shadow: none; }
+.danger { color: var(--chili); }
+button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; transform: none; }
+button.big { min-height: 58px; padding: 0 26px; font-size: 19px; }
+button.big .i { width: 24px; height: 24px; }
+button.icon-only { width: 46px; padding: 0; }
+
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 3px solid var(--green-deep);
+  outline-offset: 3px;
+}
+
+/* Fields */
+label { font-size: 14px; font-weight: 600; color: var(--navy); }
+input, select, textarea {
+  border: 2px solid var(--field);
+  border-radius: var(--r-control);
+  background: var(--plate);
+  color: var(--navy);
+  font-size: 16px;
+  padding: 12px 14px;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--navy); }
+input::placeholder, textarea::placeholder { color: #8a8ea6; }
+
+kbd { font-family: var(--font-num); border: 2px solid var(--navy); border-radius: 6px; background: var(--plate); box-shadow: 0 2px 0 var(--navy); }
+
+.toast {
+  background: var(--navy);
+  color: var(--cream);
+  border: var(--ink);
+  border-color: var(--green);
+  border-radius: var(--r-control);
+  box-shadow: none;
+  font-weight: 600;
+}
+.connection { background: var(--gold); color: var(--navy); font-weight: 700; border-bottom: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  button, button:not(:disabled):active { transition: none; transform: none; }
+}
