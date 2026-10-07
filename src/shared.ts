@@ -27,3 +27,6 @@ export function validateQuiz(value: unknown): Omit<Quiz, 'id' | 'updatedAt'> {
 }
 // Quizzes saved before the Pinto app promo existed have no flag; only an explicit false hides it.
 export function readQuiz(json: string): Quiz { const quiz = JSON.parse(json) as Quiz; return { ...quiz, promo: quiz.promo !== false }; }
+export const PROMO_TAGLINES = ['หิวแล้วใช่ไหม? ดูรีวิวร้านอร่อยจากคนไทยได้ที่ Pinto', 'เที่ยวไหนดี? เพื่อน ๆ รีวิวไว้ให้แล้วบน Pinto', 'แฟชั่น บิวตี้ ไลฟ์สไตล์ ครบในแอปเดียว — Pinto', 'ชอบแชร์? โพสต์รีวิวของคุณบน Pinto ชุมชนรีวิวของคนไทย'];
+// Deterministic for a seed, so callers seeding from shared room state show one line to the whole room without flicker.
+export function promoTagline(seed: number): string { const n = PROMO_TAGLINES.length; return PROMO_TAGLINES[((seed % n) + n) % n]; }

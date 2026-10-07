@@ -73,3 +73,5 @@ kbd{font:inherit;font-weight:800;padding:0 8px;border-radius:6px;border:1px soli
 .player-main .promo-card{margin:22px 0 4px;background:#ffffff12;border-color:#ffffff26;color:var(--cream)}
 .player-main .promo-card p{text-align:left}
 .player-main .promo-link{background:transparent;border-color:#ffffff4d;color:var(--cream)}
+.promo-note{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px 0 0;font-size:13px;line-height:1.7;color:#c9cce4;text-align:center}
+.promo-note img{border-radius:7px;flex:none}
