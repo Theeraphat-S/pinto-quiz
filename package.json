@@ -1,0 +1,33 @@
+{
+  "name": "pinto-quiz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build && wrangler dev --port 8787",
+    "build": "vite build",
+    "typecheck": "wrangler types && tsc --noEmit && tsc -p tsconfig.web.json --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "test:integration": "tsx scripts/integration.ts",
+    "check": "npm run typecheck && npm test && npm run build && wrangler deploy --dry-run",
+    "deploy": "npm run build && wrangler deploy",
+    "account:create": "node scripts/create-account.mjs"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "latest",
+    "@types/node": "latest",
+    "@types/qrcode": "^1.5.6",
+    "@types/ws": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "wrangler": "latest",
+    "ws": "latest"
+  },
+  "overrides": {
+    "sharp": "^0.35.5"
+  }
+}

@@ -1,0 +1,3 @@
+# Generate a unique value locally; never commit the actual .dev.vars file.
+# Used only by the command-line account provisioning endpoint (not public signup).
+SETUP_TOKEN=replace-with-a-long-random-secret
