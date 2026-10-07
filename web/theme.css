@@ -1,4 +1,6 @@
-/* Sticker Lunchbox foundation: tokens, type, and the controls every screen shares. See DESIGN.md. */
+/* Sticker Lunchbox foundation: tokens, type, and the controls every redesigned screen shares. See DESIGN.md.
+   Rules are scoped with :where() to the redesigned views, so the host stage keeps web/style.css until its turn,
+   and the scope adds no specificity. */
 :root {
   --navy: #1b1e50;
   --green: #53d78c;
@@ -7,7 +9,9 @@
   --cream: #fffdf3;
   --plate: #ffffff;
   --muted: #585d7a;
+  --placeholder: #8a8ea6;
   --lid-gray: #6b6f9c;
+  --on-lid: #d6d9ec;
   --field: #c9cfc3;
   --a0: #b5edc9;
   --a1: #cdd0ff;
@@ -18,32 +22,41 @@
   --chili: #b5382b;
   --night: #1b214d;
   --night-mint: #89f1ae;
+  --deep: #0d1033;
+  --night-soft: #c9cde4;
+  --glass: #ffffff12;
+  --glass-line: #ffffff2e;
 
   --ink: 3px solid var(--navy);
   --lip: 0 4px 0 var(--navy);
+  --r-mark: 6px;
   --r-control: 10px;
   --r-box: 14px;
 
   --font-body: 'Anuphan', 'Noto Sans Thai', system-ui, sans-serif;
   --font-head: 'Mitr', 'Anuphan', 'Noto Sans Thai', sans-serif;
   --font-num: 'Chakra Petch', 'Anuphan', sans-serif;
-
-  font-family: var(--font-body);
-  color: var(--navy);
-  background: var(--cream);
 }
 
-body { background: var(--cream); }
-body, button, input, textarea, select { font-family: var(--font-body); }
-h1, h2 { font-family: var(--font-head); letter-spacing: 0; color: var(--navy); }
-h1 { font-weight: 600; line-height: 1.25; }
-h2 { font-weight: 500; line-height: 1.35; }
-p { color: var(--muted); }
+/* One home for the A–D colours: every answer surface reads --fill from its answer-N class. */
+.answer-0 { --fill: var(--a0); }
+.answer-1 { --fill: var(--a1); }
+.answer-2 { --fill: var(--a2); }
+.answer-3 { --fill: var(--a3); }
 
-.i { width: 20px; height: 20px; flex: none; display: block; }
+/* Inline by default so icons sit on the text line even where the layout is not flex (the legacy stage). */
+.i { width: 20px; height: 20px; flex: none; display: inline-block; vertical-align: -0.2em; }
+:is(.stage-tray, .speed-hint) .i { width: 1.1em; height: 1.1em; margin-right: .3em; }
+
+:where([data-view=site], [data-view=player]) { font-family: var(--font-body); }
+:where([data-view=site], [data-view=player]) :is(button, input, textarea, select) { font-family: var(--font-body); }
+:where([data-view=site], [data-view=player]) :is(h1, h2) { font-family: var(--font-head); font-weight: 500; letter-spacing: 0; color: var(--navy); }
+:where([data-view=site], [data-view=player]) h1 { line-height: 1.25; }
+:where([data-view=site], [data-view=player]) h2 { line-height: 1.35; }
+:where([data-view=site]) p { color: var(--muted); }
 
 /* Buttons: outlined like the mascot, with a lip that sinks when pressed. */
-button {
+:where([data-view=site], [data-view=player]) button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -61,50 +74,46 @@ button {
   filter: none;
   transition: transform .08s, box-shadow .08s;
 }
-button:not(:disabled):hover { filter: none; background-color: #f6f8f2; }
-button:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--navy); }
-.primary, button.primary { background: var(--green); border-color: var(--navy); box-shadow: var(--lip); }
-.primary:not(:disabled):hover { background: #63e099; }
-.secondary { background: var(--navy); color: var(--cream); }
-.quiet { background: transparent; border-color: var(--field); box-shadow: none; }
-.quiet:not(:disabled):active { transform: none; box-shadow: none; }
-.danger { color: var(--chili); }
-button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; transform: none; }
-button.big { min-height: 58px; padding: 0 26px; font-size: 19px; }
-button.big .i { width: 24px; height: 24px; }
-button.icon-only { width: 46px; padding: 0; }
+:where([data-view=site], [data-view=player]) button:not(:disabled):hover { filter: none; transform: translateY(-1px); box-shadow: 0 5px 0 var(--navy); }
+:where([data-view=site], [data-view=player]) button:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 var(--navy); }
+:where([data-view=site], [data-view=player]) .primary { background: var(--green); border-color: var(--navy); box-shadow: var(--lip); }
+:where([data-view=site], [data-view=player]) .quiet { background: transparent; border-color: var(--field); box-shadow: none; }
+:where([data-view=site], [data-view=player]) .quiet:not(:disabled):is(:hover, :active) { transform: none; box-shadow: none; border-color: var(--navy); }
+:where([data-view=site], [data-view=player]) .danger { color: var(--chili); }
+:where([data-view=site], [data-view=player]) button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; transform: none; }
+:where([data-view=site], [data-view=player]) button.big { min-height: 58px; padding: 0 26px; font-size: 19px; }
+:where([data-view=site], [data-view=player]) button.big .i { width: 24px; height: 24px; }
+:where([data-view=site], [data-view=player]) button.icon-only { width: 46px; padding: 0; }
+:where([data-view=site], [data-view=player]) :is(button, a, input, textarea, select):focus-visible { outline: 3px solid var(--green-deep); outline-offset: 3px; }
 
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 3px solid var(--green-deep);
-  outline-offset: 3px;
-}
-
-/* Fields */
-label { font-size: 14px; font-weight: 600; color: var(--navy); }
-input, select, textarea {
-  border: 2px solid var(--field);
+/* The A–D letter block: a navy cut-out wherever an answer letter appears. */
+:where([data-view=site], [data-view=player]) :is(.editchoice > span, .gameanswers button b, .answerline b) {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
   border-radius: var(--r-control);
-  background: var(--plate);
-  color: var(--navy);
-  font-size: 16px;
-  padding: 12px 14px;
-}
-input:focus, select:focus, textarea:focus { border-color: var(--navy); }
-input::placeholder, textarea::placeholder { color: #8a8ea6; }
-
-kbd { font-family: var(--font-num); border: 2px solid var(--navy); border-radius: 6px; background: var(--plate); box-shadow: 0 2px 0 var(--navy); }
-
-.toast {
   background: var(--navy);
   color: var(--cream);
-  border: var(--ink);
-  border-color: var(--green);
+  font: 700 19px var(--font-num);
+}
+
+:where([data-view=site], [data-view=player]) label { font-size: 14px; font-weight: 600; }
+:where([data-view=site], [data-view=player]) ::placeholder { color: var(--placeholder); }
+
+:where([data-view=site], [data-view=player]) .toast {
+  background: var(--navy);
+  color: var(--cream);
+  border: 3px solid var(--green);
   border-radius: var(--r-control);
   box-shadow: none;
   font-weight: 600;
 }
-.connection { background: var(--gold); color: var(--navy); font-weight: 700; border-bottom: var(--ink); }
+:where([data-view=site], [data-view=player]) .connection { background: var(--coral); color: var(--navy); font-weight: 700; border-bottom: var(--ink); }
 
 @media (prefers-reduced-motion: reduce) {
-  button, button:not(:disabled):active { transition: none; transform: none; }
+  :where([data-view=site], [data-view=player]) button { transition: none; }
+  :where([data-view=site], [data-view=player]) button:not(:disabled):is(:hover, :active) { transform: none; }
 }
