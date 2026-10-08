@@ -1,6 +1,6 @@
 import { DurableObject } from 'cloudflare:workers';
 import { digest, hashPassword, HttpError, randomToken, safeEqual } from './security';
-import { type Quiz, validateQuiz } from './shared';
+import { type Quiz, validateQuiz, readQuiz } from './shared';
 type Profile = { email: string; name: string; salt: string; hash: string };
 export class AccountStore extends DurableObject<Env> {
   constructor(ctx: DurableObjectState, env: Env) {
@@ -52,8 +52,8 @@ export class AccountStore extends DurableObject<Env> {
     const p = this.profile(); return row && row.expires > Date.now() && p ? { email: p.email, name: p.name } : null;
   }
   async logout(token: string): Promise<void> { this.ctx.storage.sql.exec('DELETE FROM sessions WHERE token = ?', await digest(token)); }
-  list(): Quiz[] { return this.ctx.storage.sql.exec<{ data: string }>('SELECT data FROM quizzes ORDER BY updated DESC').toArray().map(r => JSON.parse(r.data) as Quiz); }
-  get(id: string): Quiz | null { const row = this.ctx.storage.sql.exec<{ data: string }>('SELECT data FROM quizzes WHERE id = ?', id).toArray()[0]; return row ? JSON.parse(row.data) as Quiz : null; }
+  list(): Quiz[] { return this.ctx.storage.sql.exec<{ data: string }>('SELECT data FROM quizzes ORDER BY updated DESC').toArray().map(r => readQuiz(r.data)); }
+  get(id: string): Quiz | null { const row = this.ctx.storage.sql.exec<{ data: string }>('SELECT data FROM quizzes WHERE id = ?', id).toArray()[0]; return row ? readQuiz(row.data) : null; }
   save(id: string | null, input: unknown): Quiz {
     if (id && !this.get(id)) throw new HttpError(404, 'ไม่พบ Quiz นี้');
     const data = validateQuiz(input); const quiz: Quiz = { ...data, id: id || crypto.randomUUID(), updatedAt: Date.now() };

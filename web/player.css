@@ -1,0 +1,290 @@
+/* Player phone: one task at a time on Night Lid. Stickers and tiles keep their outline; on the dark ground the
+   outline and lip are Deep Lid so the shapes still read as cut-outs. Tokens live in theme.css. */
+body[data-view=player] { background: var(--night); color: var(--cream); }
+body[data-view=player] .player-shell {
+  max-width: 520px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--night);
+  color: var(--cream);
+  overflow: visible;
+}
+
+/* Lid */
+body[data-view=player] .player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px 20px;
+  background: var(--deep);
+  border: 0;
+  box-shadow: inset 0 -8px 0 var(--green);
+}
+.player-brand { display: inline-flex; align-items: center; gap: 10px; font: 500 19px var(--font-head); color: var(--cream); }
+.player-brand b { font-weight: 500; color: var(--green); }
+.player-brand img { width: 34px; height: 34px; border-radius: var(--r-control); border: 2px solid var(--cream); }
+body[data-view=player] .player-header button {
+  min-height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--cream);
+  background: transparent;
+  border: 2px solid var(--lid-gray);
+  box-shadow: none;
+}
+body[data-view=player] .player-header button .i { width: 18px; height: 18px; }
+body[data-view=player] .player-header button[aria-pressed=true] { border-color: var(--night-mint); color: var(--night-mint); }
+body[data-view=player] .player-header button:not(:disabled):is(:hover, :active) { transform: none; box-shadow: none; }
+
+body[data-view=player] .player-main { padding: 20px 18px 40px; position: relative; isolation: isolate; }
+body[data-view=player] .player-main p { color: var(--night-soft); font-size: 16px; }
+body[data-view=player] .player-main h1 { font: 500 30px/1.3 var(--font-head); color: var(--cream); text-align: center; margin: 6px 0 10px; }
+body[data-view=player] .player-main > h2 { font: 500 23px/1.45 var(--font-head); color: var(--cream); text-align: center; margin: 18px 0 4px; overflow-wrap: anywhere; }
+body[data-view=player] .player-main .mascot { display: block; width: 170px; height: 170px; object-fit: contain; margin: 10px auto 4px; animation: none; }
+body[data-view=player] .loading { color: var(--night-soft); text-align: center; padding: 80px 20px; }
+
+/* Buttons on the dark ground: same 4px lip, in Deep Lid. */
+body[data-view=player] .player-main button { border-color: var(--deep); box-shadow: 0 4px 0 var(--deep); }
+body[data-view=player] .player-main button:not(:disabled):hover { box-shadow: 0 5px 0 var(--deep); }
+body[data-view=player] .player-main button:not(:disabled):active { box-shadow: 0 1px 0 var(--deep); }
+body[data-view=player] .player-main button:focus-visible { outline: 3px solid var(--night-mint); outline-offset: 3px; }
+body[data-view=player] .player-main .primary { width: 100%; min-height: 56px; margin-top: 14px; font-size: 18px; }
+body[data-view=player] .player-main .primary .i { width: 22px; height: 22px; }
+
+/* Join */
+body[data-view=player] .player-main .joinhead { margin: 28px 0 8px; }
+.joininfo { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 0 22px; text-align: center; }
+body[data-view=player] .joininfo { color: var(--cream); font-weight: 600; font-size: 17px; }
+.joininfo span { font-size: 14px; font-weight: 600; color: var(--night-soft); }
+:is(.joininfo, .gameinfo) b { font: 700 1.15em var(--font-num); color: var(--cream); letter-spacing: 1px; }
+body[data-view=player] #join-form label { display: block; color: var(--cream); font-size: 15px; margin-bottom: 8px; }
+body[data-view=player] #join-form input { width: 100%; font-size: 19px; font-weight: 600; padding: 14px 16px; background: var(--plate); color: var(--navy); border: 3px solid var(--deep); border-radius: var(--r-control); }
+body[data-view=player] #join-form input:focus { border-color: var(--night-mint); }
+
+/* Who and where */
+body[data-view=player] .gameinfo { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0 0 6px; font-size: 14px; font-weight: 600; color: var(--night-soft); }
+.gameinfo span { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.gameinfo .i { width: 17px; height: 17px; color: var(--night-mint); }
+
+/* Lobby */
+.lobbyinfo { text-align: center; }
+body[data-view=player] .lobbyinfo > p:first-child { color: var(--cream); font-weight: 600; font-size: 17px; margin: 0; }
+.lobbycount { display: flex; justify-content: center; align-items: baseline; gap: 10px; margin: 14px 0 4px; }
+.lobbycount strong { font: 700 64px/1 var(--font-num); color: var(--night-mint); }
+.lobbycount span { font-weight: 600; font-size: 17px; color: var(--cream); }
+body[data-view=player] .waitnote { text-align: center; margin: 14px 0 0; font-size: 15px; }
+.waitnote b { color: var(--cream); font-family: var(--font-num); }
+
+/* The sister-app card: a dashed cut-out, quieter than the game. */
+body[data-view=player] .player-main .promo-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0 4px;
+  padding: 16px;
+  background: var(--glass);
+  border: 2px dashed var(--glass-line);
+  border-radius: var(--r-box);
+  box-shadow: none;
+  color: var(--cream);
+}
+body[data-view=player] .player-main .promo-card > img { width: 54px; height: 54px; border-radius: var(--r-control); }
+body[data-view=player] .player-main .promo-card p { color: var(--cream); font-size: 15px; text-align: left; margin: 0; }
+body[data-view=player] .player-main .promo-link { display: inline-flex; align-items: center; min-height: 40px; margin-top: 8px; padding: 0 14px; color: var(--cream); background: transparent; border: 2px solid var(--glass-line); border-radius: var(--r-control); font-weight: 700; text-decoration: none; }
+body[data-view=player] .promo-note { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 22px; font-size: 13px; color: var(--night-soft); }
+
+/* Stickers: the question number, die-cut with a cream ring and tilted. */
+body[data-view=player] :is(.ready-stage .qpill, .qsticker) {
+  display: inline-block;
+  padding: 4px 14px;
+  font: 700 18px var(--font-num);
+  color: var(--navy);
+  background: var(--green);
+  border: 3px solid var(--deep);
+  border-radius: var(--r-control);
+  box-shadow: 0 0 0 4px var(--cream);
+  transform: rotate(-3deg);
+}
+.qsticker small { font-size: 14px; }
+
+/* Countdown */
+body[data-view=player] .player-main .ready-stage { min-height: calc(100dvh - 190px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0; text-align: center; }
+body[data-view=player] .ready-stage h1 { margin: 6px 0 0; }
+body[data-view=player] .ready-row { display: flex; align-items: center; justify-content: center; }
+body[data-view=player] .player-main .ready-orbit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 160px;
+  height: 160px;
+  background: var(--cream);
+  border: 3px solid var(--deep);
+  border-radius: var(--r-box);
+  box-shadow: none;
+  transform: rotate(-3deg);
+}
+body[data-view=player] .player-main .countdown-digit { position: static; font: 700 104px/1 var(--font-num); color: var(--navy); text-shadow: none; transform: rotate(3deg); }
+body[data-view=player] .ready-stage p { color: var(--night-soft); font-weight: 600; margin: 4px 0 0; }
+
+/* Question */
+.gamestatus { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 16px 2px 6px; }
+.myscore { font-size: 14px; font-weight: 600; color: var(--night-soft); }
+.myscore b { font: 700 20px var(--font-num); color: var(--cream); margin-right: 2px; }
+
+body[data-view=player] .player-main .clock-wrap { display: grid; justify-items: center; gap: 10px; margin: 14px auto 0; max-width: 300px; text-align: center; }
+body[data-view=player] .player-main .timer {
+  width: 118px;
+  height: 118px;
+  margin: 0;
+  padding: 9px;
+  border-radius: 50%;
+  background: conic-gradient(var(--night-mint) var(--progress), var(--glass-line) 0);
+  box-shadow: 0 0 0 3px var(--deep);
+  color: var(--cream);
+  animation: none;
+}
+body[data-view=player] .player-main .timer > div { display: grid; place-content: center; width: 100%; height: 100%; border-radius: 50%; background: var(--night); }
+body[data-view=player] .player-main .timer span { font: 700 46px/1 var(--font-num); letter-spacing: 0; }
+body[data-view=player] .player-main .timer small { font-size: 12px; color: var(--night-soft); margin-top: 2px; }
+body[data-view=player] .player-main .timer.urgent { background: conic-gradient(var(--coral) var(--progress), var(--glass-line) 0); color: var(--coral); }
+body[data-view=player] .player-main .time-track { width: 100%; height: 10px; border-radius: 99px; background: var(--glass-line); overflow: hidden; }
+body[data-view=player] .player-main .time-track > div { height: 100%; background: var(--night-mint); border-radius: 0; }
+body[data-view=player] .player-main .time-track > div.urgent { background: var(--coral); }
+body[data-view=player] .player-main .speed-hint { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; color: var(--night-soft); }
+body[data-view=player] .speed-hint .i { width: 17px; height: 17px; margin: 0; color: var(--night-mint); }
+body[data-view=player] .player-main .speed-hint strong { font-family: var(--font-num); font-size: 16px; color: var(--night-mint); }
+
+body[data-view=player] .gameanswers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0 18px; }
+body[data-view=player] .player-main .gameanswers button {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  text-align: left;
+  color: var(--navy);
+  background: var(--fill);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+  border: 3px solid var(--deep);
+  border-radius: var(--r-box);
+  overflow-wrap: anywhere;
+  opacity: 1;
+}
+body[data-view=player] .player-main .gameanswers button:disabled { opacity: .35; box-shadow: none; transform: translateY(4px); cursor: default; }
+body[data-view=player] .player-main .gameanswers button.selected { opacity: 1; outline: 4px solid var(--cream); outline-offset: 3px; transform: translateY(4px); box-shadow: 0 0 0 var(--deep); }
+body[data-view=player] .answerhint { text-align: center; }
+
+body[data-view=player] .player-main .waiting {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 4px 0 0;
+  padding: 14px 16px;
+  background: var(--glass);
+  border: 2px dashed var(--night-mint);
+  border-radius: var(--r-box);
+  color: var(--night-soft);
+  text-align: left;
+}
+.waiting b { display: block; color: var(--cream); font-size: 17px; }
+body[data-view=player] .sent-check { display: block; margin: 0; color: var(--night-mint); }
+.sent-check .i { width: 38px; height: 38px; }
+
+/* Reveal: the stamp is a sticker, not a badge; colour only for "right", the icon carries the rest. */
+body[data-view=player] .result-stamp {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin: 10px auto 8px;
+  border: 3px solid var(--deep);
+  border-radius: var(--r-box);
+  box-shadow: 0 0 0 4px var(--cream);
+  transform: rotate(-3deg);
+  background: var(--cream);
+  color: var(--navy);
+  font-size: 0;
+}
+.result-stamp .i { width: 56px; height: 56px; }
+body[data-view=player] .result-stamp.right { background: var(--green); }
+body[data-view=player] .result-stamp.wrong { color: var(--chili); }
+
+body[data-view=player] .player-main .answer-correct { margin: 18px 0 10px; padding: 14px 16px 16px; color: var(--navy); background: var(--fill); border: 3px solid var(--deep); border-radius: var(--r-box); }
+.answer-correct > span { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--green-deep); }
+.answer-correct > span .i { width: 18px; height: 18px; }
+.answerline { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.answerline strong { font: 500 21px/1.4 var(--font-head); overflow-wrap: anywhere; }
+body[data-view=player] .mypick { text-align: center; margin: 4px 0 0; font-size: 15px; }
+.mypick b { font-family: var(--font-num); color: var(--cream); }
+
+body[data-view=player] .resultpoints { display: grid; justify-items: center; gap: 2px; padding: 16px 0 6px; text-align: center; }
+body[data-view=player] .resultpoints strong { display: block; font: 700 58px/1.1 var(--font-num); color: var(--night-mint); }
+body[data-view=player] .resultpoints strong.zero { color: var(--night-soft); }
+body[data-view=player] .resultpoints span { font-size: 14px; color: var(--night-soft); }
+
+body[data-view=player] .player-main .explanation { margin: 18px 0 0; padding: 16px 18px; background: var(--cream); border: 3px solid var(--deep); border-radius: var(--r-box); color: var(--navy); }
+body[data-view=player] .player-main .explanation h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font: 500 18px var(--font-head); color: var(--navy); text-align: left; }
+body[data-view=player] .explanation h2 .i { width: 22px; height: 22px; color: var(--leaf); }
+body[data-view=player] .player-main .explanation p { color: var(--navy); font-size: 16px; text-align: left; margin: 0; }
+
+/* Confetti falls behind the result, never over the words. */
+body[data-view=player] .player-main > .confetti { z-index: -1; }
+
+/* Standings */
+body[data-view=player] .rank-move {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  margin: 10px auto 0;
+  padding: 4px 12px;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  border: 2px solid var(--deep);
+  border-radius: var(--r-control);
+  background: var(--glass);
+  color: var(--cream);
+}
+.rank-move .i { width: 16px; height: 16px; }
+body[data-view=player] .rank-move.up { background: var(--green); color: var(--navy); }
+body[data-view=player] .rank-move.down { background: var(--cream); color: var(--chili); }
+
+body[data-view=player] .player-main .rankrow {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  font-size: 17px;
+  color: var(--cream);
+  background: var(--glass);
+  border: 2px solid var(--glass-line);
+  border-radius: var(--r-box);
+  box-shadow: none;
+}
+body[data-view=player] .player-main .rankrow > strong:first-child { font: 700 20px var(--font-num); text-align: center; }
+body[data-view=player] .player-main .rankrow > strong:last-child { font: 700 18px var(--font-num); color: var(--night-mint); }
+body[data-view=player] .player-main .rankrow.top { background: var(--gold); color: var(--navy); border: 3px solid var(--deep); }
+body[data-view=player] .player-main .rankrow.top > strong:last-child { color: var(--navy); }
+body[data-view=player] .player-main .rankrow.mine { border-color: var(--night-mint); box-shadow: inset 0 0 0 1px var(--night-mint); }
+body[data-view=player] .player-main .rankrow.top.mine { box-shadow: inset 0 0 0 2px var(--night-mint); }
+body[data-view=player] .player-main .rankrow small { display: inline-block; margin-left: 8px; padding: 0 6px; font-size: 12px; font-weight: 700; color: var(--navy); background: var(--night-mint); border-radius: var(--r-mark); vertical-align: 2px; }
+body[data-view=player] .rank-gap { display: flex; justify-content: center; gap: 6px; margin: 10px 0 0; }
+.rank-gap i { width: 6px; height: 6px; border-radius: 1px; background: var(--glass-line); }
+
+@media (max-width: 360px) {
+  body[data-view=player] .gameanswers { gap: 10px; }
+  body[data-view=player] .player-main .gameanswers button { min-height: 108px; font-size: 16px; padding: 12px; }
+  body[data-view=player] .player-main .ready-orbit { width: 132px; height: 132px; }
+  body[data-view=player] .player-main .countdown-digit { font-size: 84px; }
+}

@@ -1,8 +1,8 @@
 export type Question = { id: string; text: string; options: string[]; correct: number; explanation: string; duration: number; maxScore: number };
-export type Quiz = { id: string; title: string; music: boolean; questions: Question[]; updatedAt: number };
+export type Quiz = { id: string; title: string; music: boolean; promo: boolean; questions: Question[]; updatedAt: number };
 export type Player = { id: string; name: string; score: number };
 export type Phase = 'lobby' | 'countdown' | 'question' | 'reveal' | 'leaderboard' | 'finished' | 'closed';
-export type RoomView = { pin: string; title: string; phase: Phase; music: boolean; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
+export type RoomView = { pin: string; title: string; quizId?: string; phase: Phase; music: boolean; promo: boolean; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
 export function scoreAnswer(correct: boolean, elapsedMs: number, durationSeconds: number, maximum: number): number {
   if (!correct || elapsedMs < 0 || elapsedMs >= durationSeconds * 1000) return 0;
   return Math.round(maximum * (1 - .5 * elapsedMs / (durationSeconds * 1000)));
@@ -23,5 +23,12 @@ export function validateQuiz(value: unknown): Omit<Quiz, 'id' | 'updatedAt'> {
     if (typeof q.explanation !== 'string' || q.explanation.length > 1500) throw new Error('คำอธิบายยาวเกินไป');
     return { id: crypto.randomUUID(), text: q.text.trim(), options: q.options.map(x => String(x).trim()), correct: Number(q.correct), explanation: q.explanation.trim(), duration: Number(q.duration), maxScore: Number(q.maxScore) };
   });
-  return { title: data.title.trim(), music: data.music === true, questions };
+  return { title: data.title.trim(), music: data.music === true, promo: data.promo !== false, questions };
 }
+// Quizzes saved before the Pinto app promo existed have no flag; only an explicit false hides it.
+// Pasted PINs arrive as "115 695", "115-695" or in Thai digits; keep only the six digits.
+export function normalizePin(value: string): string { return value.replace(/[๐-๙]/g, d => String(d.charCodeAt(0) - 0x0e50)).replace(/\D/g, '').slice(0, 6); }
+export function readQuiz(json: string): Quiz { const quiz = JSON.parse(json) as Quiz; return { ...quiz, promo: quiz.promo !== false }; }
+export const PROMO_TAGLINES = ['หิวแล้วใช่ไหม? ดูรีวิวร้านอร่อยจากคนไทยได้ที่ Pinto', 'เที่ยวไหนดี? เพื่อน ๆ รีวิวไว้ให้แล้วบน Pinto', 'แฟชั่น บิวตี้ ไลฟ์สไตล์ ครบในแอปเดียว — Pinto', 'ชอบแชร์? โพสต์รีวิวของคุณบน Pinto ชุมชนรีวิวของคนไทย'];
+// Deterministic for a seed, so callers seeding from shared room state show one line to the whole room without flicker.
+export function promoTagline(seed: number): string { const n = PROMO_TAGLINES.length; return PROMO_TAGLINES[((seed % n) + n) % n]; }

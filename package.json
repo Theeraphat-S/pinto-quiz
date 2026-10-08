@@ -11,9 +11,15 @@
     "test:integration": "tsx scripts/integration.ts",
     "check": "npm run typecheck && npm test && npm run build && wrangler deploy --dry-run",
     "deploy": "npm run build && wrangler deploy",
-    "account:create": "node scripts/create-account.mjs"
+    "account:create": "node scripts/create-account.mjs",
+    "seed": "node scripts/seed-local.mjs",
+    "sfx": "tsx scripts/render-sfx.ts"
   },
   "dependencies": {
+    "@fontsource/anuphan": "^5.3.0",
+    "@fontsource/chakra-petch": "^5.3.0",
+    "@fontsource/mitr": "^5.3.0",
+    "motion": "^14.0.0",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
@@ -21,6 +27,7 @@
     "@types/node": "latest",
     "@types/qrcode": "^1.5.6",
     "@types/ws": "latest",
+    "iconsax": "^0.1.1",
     "tsx": "latest",
     "typescript": "latest",
     "vite": "latest",
