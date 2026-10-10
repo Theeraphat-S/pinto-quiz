@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizePin, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
+import { normalizePin, PREVIEW_SECONDS, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
 const quiz = () => ({ title: 'Quiz', music: true, questions: [{ text: 'Question?', options: ['A','B','C','D'], correct: 0, explanation: 'Because A', duration: 20, maxScore: 1000 }] });
 test('correct answers reward server-measured speed and reject deadline answers', () => {
   assert.equal(scoreAnswer(true, 0, 20, 1000), 1000);
@@ -41,4 +41,7 @@ test('pasted PINs keep only six digits', () => {
   assert.equal(normalizePin('๑๑๕๖๙๕'), '115695');
   assert.equal(normalizePin('PIN: 115 695 7'), '115695');
   assert.equal(normalizePin('11 5'), '115');
+});
+test('reading time before the options is a fixed 30 seconds', () => {
+  assert.equal(PREVIEW_SECONDS, 30);
 });

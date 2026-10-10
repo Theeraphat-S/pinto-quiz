@@ -282,6 +282,9 @@ body[data-view=player] .player-main .rankrow small { display: inline-block; marg
 body[data-view=player] .rank-gap { display: flex; justify-content: center; gap: 6px; margin: 10px 0 0; }
 .rank-gap i { width: 6px; height: 6px; border-radius: 1px; background: var(--glass-line); }
 
+body[data-view=player] .player-main .preview-wait { margin: 22px 0 0; gap: 12px; }
+body[data-view=player] .player-main .preview-wait p { color: var(--night-soft); font-weight: 600; }
+
 @media (max-width: 360px) {
   body[data-view=player] .gameanswers { gap: 10px; }
   body[data-view=player] .player-main .gameanswers button { min-height: 108px; font-size: 16px; padding: 12px; }

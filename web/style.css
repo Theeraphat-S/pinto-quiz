@@ -75,3 +75,13 @@ kbd{font:inherit;font-weight:800;padding:0 8px;border-radius:6px;border:1px soli
 .promo-note{display:flex;align-items:center;justify-content:center;gap:8px;margin:18px 0 0;font-size:13px;line-height:1.7;color:#c9cce4;text-align:center}
 .promo-note img{border-radius:7px;flex:none}
 .rank-move{display:table;margin:10px auto 0;padding:5px 14px;border-radius:99px;font-size:14px;font-style:normal;font-weight:800;background:#ffffff14;color:#e9ecf4}.rank-move.up{background:#bceac3;color:#1d5a35}.rank-move.down{background:#ffd9cc;color:#8a3420}.resultpoints strong.zero{color:#c7cbdc}.player-main .rankrow.mine{border-color:#89f1ae;box-shadow:inset 0 0 0 1px #89f1ae}.rank-gap{text-align:center;color:#c7cbdc;letter-spacing:4px;line-height:1;margin:2px 0}
+.preview-wait{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.preview-wait p{margin:0;font-weight:700;color:#4b5068}
+.preview-wait .time-track>div{transition:transform .2s linear}
+.stage-app .scene-preview{justify-content:center;align-items:center;gap:36px}
+.stage-app .scene-preview .qpill{align-self:center}
+.stage-app .scene-preview .stage-question{font-size:56px}
+.stage-app .scene-preview .stage-question.long{font-size:40px}
+.stage-app .scene-preview .preview-wait .time-track{width:520px;height:12px}
+.stage-app .scene-preview .preview-wait p{font-size:26px}
+.stage-app .scene-preview .hostbottom{align-self:stretch}
