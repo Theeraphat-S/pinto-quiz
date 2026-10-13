@@ -28,7 +28,7 @@ try {
   const hostLogin = await request('/api/login', 'POST', { email, password }); assert.equal(hostLogin.status, 200);
   const otherLogin = await request('/api/login', 'POST', { email: other, password });
   const question = { id: 'ignored', text: 'Planet?', options: ['Jupiter','Saturn','Earth','Neptune'], correct: 0, explanation: 'Jupiter is the largest.', duration: 10, maxScore: 1000 };
-  const saved = await request('/api/quizzes', 'POST', { title: 'Integration Quiz', music: true, questions: [question, { ...question, text: 'Second?', correct: 1 }] }, hostLogin.cookie); assert.equal(saved.status, 201);
+  const saved = await request('/api/quizzes', 'POST', { title: 'Integration Quiz', music: true, preview: 10, questions: [question, { ...question, text: 'Second?', correct: 1 }] }, hostLogin.cookie); assert.equal(saved.status, 201);
   assert.equal((await request('/api/quizzes/' + saved.data.id, 'GET', undefined, otherLogin.cookie)).status, 404);
   const room = await request('/api/rooms', 'POST', { quizId: saved.data.id }, hostLogin.cookie); assert.equal(room.status, 201); const pin = String(room.data.pin);
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'start' }, otherLogin.cookie)).status, 403);
@@ -37,33 +37,33 @@ try {
   const host = new Client(pin, hostLogin.cookie, true), player = new Client(pin, join.cookie), playerTwo = new Client(pin, joinTwo.cookie); clients.push(host,player,playerTwo);
   await host.state('lobby'); await player.state('lobby'); await playerTwo.state('lobby');
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'start' }, hostLogin.cookie)).status, 200);
-  const countdown = await player.state('countdown'); assert.equal(countdown.question, undefined, 'Question must stay hidden until countdown ends');
+  const countdown = await player.state('countdown'); assert.equal(countdown.question, undefined, 'Question must stay hidden until countdown ends'); assert.equal(countdown.rival, 'name', 'Rival display defaults to name and gap');
   assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'During countdown' })).status, 409);
   player.answer('not-yet-open', 0); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('ปิดรับคำตอบแล้ว'));
   const countdownHost = await host.state('countdown'); assert.equal(countdownHost.deadline, countdown.deadline, 'Host and players share a countdown deadline');
   const preview = await player.state('preview'); assert.equal(preview.question?.text, 'Planet?'); assert.deepEqual(preview.question?.options, [], 'Options stay hidden while players read the question');
-  const reading = preview.deadline - preview.serverTime; assert.ok(reading > 29000 && reading <= 30000, 'Reading time is a fixed 30 seconds');
+  const reading = preview.deadline - preview.serverTime; assert.ok(reading > 9000 && reading <= 10000, 'Reading time follows the quiz setting'); assert.equal(preview.preview, 10);
   player.answer(preview.question!.id, 0); await new Promise(r=>setTimeout(r,100)); assert.equal(player.errors.filter(e => e === 'ปิดรับคำตอบแล้ว').length, 2, 'No answers while reading');
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'open' }, hostLogin.cookie)).status, 200);
   const before = await player.state('question', () => true, 8000); assert.equal(before.question?.options.length, 4); assert.equal(before.question?.correct, undefined); assert.equal(before.question?.explanation, undefined);
   assert.ok(before.deadline - before.serverTime > 9500, 'Full answer time starts when answers open');
-  player.answer(before.question!.id, 0); const answered = await player.state('question', s => s.me?.answered === true); assert.equal(answered.me?.points, undefined); assert.equal(answered.me?.score, 0, 'Answer correctness must not leak via total before reveal');
+  player.answer(before.question!.id, 0); const answered = await player.state('question', s => s.me?.answered === true); assert.equal(answered.me?.points, undefined); assert.equal(answered.me?.score, 0, 'Answer correctness must not leak via total before reveal'); assert.equal(answered.me?.streak, 0, 'A correct answer must not grow the streak before reveal');
   player.answer(before.question!.id, 1); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('คุณตอบข้อนี้แล้ว'));
   assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'Late' })).status, 409);
   assert.equal(host.states.at(-1)?.phase, 'question', 'Keep accepting answers until everyone answers');
   playerTwo.answer(before.question!.id, 1);
   const reveal = await player.state('reveal'); assert.equal(reveal.question?.correct, 0); assert.ok(reveal.me!.points! > 500); assert.equal(reveal.distribution?.[0], 1);
   assert.ok(reveal.serverTime < before.deadline, 'Reveal immediately before the original deadline');
-  assert.equal((await playerTwo.state('reveal')).me?.points, 0);
+  assert.equal(reveal.me?.streak, 1); const wrongReveal = await playerTwo.state('reveal'); assert.equal(wrongReveal.me?.points, 0); assert.equal(wrongReveal.me?.streak, 0);
   assert.equal((await host.state('reveal')).answeredCount, 2);
   playerTwo.answer(before.question!.id, 0); await new Promise(r=>setTimeout(r,100)); assert.ok(playerTwo.errors.includes('ปิดรับคำตอบแล้ว'));
   player.close(); const resumed = new Client(pin, join.cookie); clients.push(resumed); assert.equal((await resumed.state('reveal')).me?.score, reveal.me?.score);
   await request(`/api/rooms/${pin}/command`, 'POST', { command: 'next' }, hostLogin.cookie);
   await resumed.state('preview', s => s.questionIndex === 1, 5000); assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'open' }, hostLogin.cookie)).status, 200);
   const second = await resumed.state('question', s => s.questionIndex === 1, 10000); resumed.answer(before.question!.id, 1); await new Promise(r=>setTimeout(r,100)); assert.ok(resumed.errors.includes('ปิดรับคำตอบแล้ว'));
-  resumed.answer(second.question!.id, 0); await resumed.state('question', s=>s.questionIndex===1&&s.me?.answered===true);
+  resumed.answer(second.question!.id, 0); const wrongSent = await resumed.state('question', s=>s.questionIndex===1&&s.me?.answered===true); assert.equal(wrongSent.me?.streak, 1, 'A wrong answer must not reset the streak before reveal');
   // An alarm automatically reveals the second question after its deadline.
-  await new Promise(r=>setTimeout(r,10100)); const timed = await resumed.state('reveal', s=>s.questionIndex===1); assert.equal(timed.me?.points, 0); assert.equal(timed.question?.correct, 1);
+  await new Promise(r=>setTimeout(r,10100)); const timed = await resumed.state('reveal', s=>s.questionIndex===1); assert.equal(timed.me?.points, 0); assert.equal(timed.question?.correct, 1); assert.equal(timed.me?.streak, 0);
   await request(`/api/rooms/${pin}/command`, 'POST', { command: 'next' }, hostLogin.cookie); assert.equal((await resumed.state('finished')).players.length, 2);
   // A solo player also completes a question; the host can still end an incomplete question manually.
   const soloRoom = await request('/api/rooms', 'POST', { quizId: saved.data.id }, hostLogin.cookie), soloPin = String(soloRoom.data.pin);
@@ -76,6 +76,17 @@ try {
   await request(`/api/rooms/${soloPin}/command`, 'POST', { command: 'next' }, hostLogin.cookie); await solo.state('preview', s=>s.questionIndex===1, 5000); assert.equal((await request(`/api/rooms/${soloPin}/command`, 'POST', { command: 'open' }, hostLogin.cookie)).status, 200); await solo.state('question', s=>s.questionIndex===1, 10000);
   await request(`/api/rooms/${soloPin}/command`, 'POST', { command: 'reveal' }, hostLogin.cookie);
   assert.equal((await solo.state('reveal', s=>s.questionIndex===1)).answeredCount, 0);
+  // Two correct answers in a row earn the +100 streak bonus on top of the speed score (at most 1,000 here).
+  const streakRoom = await request('/api/rooms', 'POST', { quizId: saved.data.id }, hostLogin.cookie), streakPin = String(streakRoom.data.pin);
+  const streakJoin = await request(`/api/rooms/${streakPin}/join`, 'POST', { name: 'Streaker' });
+  const streaker = new Client(streakPin, streakJoin.cookie); clients.push(streaker); await streaker.state('lobby');
+  await request(`/api/rooms/${streakPin}/command`, 'POST', { command: 'start' }, hostLogin.cookie);
+  await streaker.state('preview', () => true, 5000); await request(`/api/rooms/${streakPin}/command`, 'POST', { command: 'open' }, hostLogin.cookie);
+  streaker.answer((await streaker.state('question')).question!.id, 0); const firstRight = await streaker.state('reveal'); assert.ok(firstRight.me!.points! <= 1000); assert.equal(firstRight.me?.streak, 1);
+  await request(`/api/rooms/${streakPin}/command`, 'POST', { command: 'next' }, hostLogin.cookie); await streaker.state('preview', s=>s.questionIndex===1, 5000); await request(`/api/rooms/${streakPin}/command`, 'POST', { command: 'open' }, hostLogin.cookie);
+  streaker.answer((await streaker.state('question', s=>s.questionIndex===1)).question!.id, 1);
+  const secondRight = await streaker.state('reveal', s=>s.questionIndex===1); assert.equal(secondRight.me?.streak, 2); assert.ok(secondRight.me!.points! > 1000, 'Second correct answer in a row includes the streak bonus');
+  assert.equal(secondRight.players.find(p => p.id === secondRight.me?.id)?.streak, 2);
   const crossOrigin = await fetch(base + '/api/logout', { method:'POST',headers:{Origin:'https://evil.example',Cookie:hostLogin.cookie} }); assert.equal(crossOrigin.status,403);
   const newEmail = `renamed-${suffix}@example.com`, newPassword = 'Test@2026';
   assert.equal((await request('/api/accounts/change-login','POST',{currentEmail:email,email:newEmail,password:newPassword},hostLogin.cookie)).status,403);

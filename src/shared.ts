@@ -1,18 +1,34 @@
 export type Question = { id: string; text: string; options: string[]; correct: number; explanation: string; duration: number; maxScore: number };
-export type Quiz = { id: string; title: string; music: boolean; promo: boolean; questions: Question[]; updatedAt: number };
-export type Player = { id: string; name: string; score: number };
+// What the phone's standings say about the nearest rival: their name and the gap, the gap alone, or nothing.
+export type RivalMode = 'name' | 'points' | 'off';
+export const RIVAL_MODES: RivalMode[] = ['name', 'points', 'off'];
+export type Quiz = { id: string; title: string; music: boolean; promo: boolean; preview: number; rival: RivalMode; questions: Question[]; updatedAt: number };
+export type Player = { id: string; name: string; score: number; streak?: number };
 export type Phase = 'lobby' | 'countdown' | 'preview' | 'question' | 'reveal' | 'leaderboard' | 'finished' | 'closed';
-export type RoomView = { pin: string; title: string; quizId?: string; phase: Phase; music: boolean; promo: boolean; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
-// Reading time before the options appear. Fixed for every question; answer time starts after it.
-export const PREVIEW_SECONDS = 30;
+export type RoomView = { pin: string; title: string; quizId?: string; phase: Phase; music: boolean; promo: boolean; preview: number; rival: RivalMode; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
+// Reading time before the options appear, chosen per quiz; answer time starts after it.
+export const PREVIEW_CHOICES = [5, 10, 20, 30];
+export const DEFAULT_PREVIEW_SECONDS = 5;
+// Quizzes (and open rooms) saved before the setting existed have no value; they get the default.
+export function previewSeconds(value: unknown): number { return PREVIEW_CHOICES.includes(Number(value)) ? Number(value) : DEFAULT_PREVIEW_SECONDS; }
 export function scoreAnswer(correct: boolean, elapsedMs: number, durationSeconds: number, maximum: number): number {
   if (!correct || elapsedMs < 0 || elapsedMs >= durationSeconds * 1000) return 0;
   return Math.round(maximum * (1 - .5 * elapsedMs / (durationSeconds * 1000)));
 }
+// Correct answers in a row ending at question `through`; a wrong or missing answer breaks the run.
+export function currentStreak(correctQuestions: Iterable<number>, through: number): number {
+  const correct = new Set(correctQuestions); let n = 0;
+  while (correct.has(through - n)) n++;
+  return n;
+}
+// Kahoot-style answer streak: from the second correct answer in a row, +100 per answer, capped at +500.
+export function streakBonus(streak: number): number { return streak < 2 ? 0 : Math.min(500, (streak - 1) * 100); }
 export function validateQuiz(value: unknown): Omit<Quiz, 'id' | 'updatedAt'> {
   if (!value || typeof value !== 'object') throw new Error('ข้อมูล Quiz ไม่ถูกต้อง');
   const data = value as Record<string, unknown>;
   if (typeof data.title !== 'string' || !data.title.trim() || data.title.length > 120) throw new Error('ชื่อ Quiz ต้องมี 1–120 ตัวอักษร');
+  if (data.preview !== undefined && !PREVIEW_CHOICES.includes(Number(data.preview))) throw new Error('เวลาอ่านโจทย์ไม่ถูกต้อง');
+  if (data.rival !== undefined && !RIVAL_MODES.includes(data.rival as RivalMode)) throw new Error('การแสดงคู่แข่งไม่ถูกต้อง');
   if (!Array.isArray(data.questions) || data.questions.length < 1 || data.questions.length > 100) throw new Error('Quiz ต้องมี 1–100 คำถาม');
   const questions = data.questions.map((raw: unknown): Question => {
     if (!raw || typeof raw !== 'object') throw new Error('คำถามไม่ถูกต้อง');
@@ -25,12 +41,14 @@ export function validateQuiz(value: unknown): Omit<Quiz, 'id' | 'updatedAt'> {
     if (typeof q.explanation !== 'string' || q.explanation.length > 1500) throw new Error('คำอธิบายยาวเกินไป');
     return { id: crypto.randomUUID(), text: q.text.trim(), options: q.options.map(x => String(x).trim()), correct: Number(q.correct), explanation: q.explanation.trim(), duration: Number(q.duration), maxScore: Number(q.maxScore) };
   });
-  return { title: data.title.trim(), music: data.music === true, promo: data.promo !== false, questions };
+  return { title: data.title.trim(), music: data.music === true, promo: data.promo !== false, preview: previewSeconds(data.preview), rival: readRival(data.rival), questions };
 }
 // Quizzes saved before the Pinto app promo existed have no flag; only an explicit false hides it.
 // Pasted PINs arrive as "115 695", "115-695" or in Thai digits; keep only the six digits.
 export function normalizePin(value: string): string { return value.replace(/[๐-๙]/g, d => String(d.charCodeAt(0) - 0x0e50)).replace(/\D/g, '').slice(0, 6); }
-export function readQuiz(json: string): Quiz { const quiz = JSON.parse(json) as Quiz; return { ...quiz, promo: quiz.promo !== false }; }
+export function readQuiz(json: string): Quiz { const quiz = JSON.parse(json) as Quiz; return { ...quiz, promo: quiz.promo !== false, preview: previewSeconds(quiz.preview), rival: readRival(quiz.rival) }; }
+// Quizzes and open rooms saved before the setting existed show the rival's name and gap.
+export function readRival(value: unknown): RivalMode { return RIVAL_MODES.includes(value as RivalMode) ? value as RivalMode : 'name'; }
 export const PROMO_TAGLINES = ['หิวแล้วใช่ไหม? ดูรีวิวร้านอร่อยจากคนไทยได้ที่ Pinto', 'เที่ยวไหนดี? เพื่อน ๆ รีวิวไว้ให้แล้วบน Pinto', 'แฟชั่น บิวตี้ ไลฟ์สไตล์ ครบในแอปเดียว — Pinto', 'ชอบแชร์? โพสต์รีวิวของคุณบน Pinto ชุมชนรีวิวของคนไทย'];
 // Deterministic for a seed, so callers seeding from shared room state show one line to the whole room without flicker.
 export function promoTagline(seed: number): string { const n = PROMO_TAGLINES.length; return PROMO_TAGLINES[((seed % n) + n) % n]; }

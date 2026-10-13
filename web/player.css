@@ -77,6 +77,9 @@ body[data-view=player] .lobbyinfo > p:first-child { color: var(--cream); font-we
 .lobbycount strong { font: 700 64px/1 var(--font-num); color: var(--night-mint); }
 .lobbycount span { font-weight: 600; font-size: 17px; color: var(--cream); }
 body[data-view=player] .waitnote { text-align: center; margin: 14px 0 0; font-size: 15px; }
+body[data-view=player] .rival-note { text-align: center; margin: 0 0 14px; font-size: 16px; color: var(--night-soft); }
+body[data-view=player] .rival-note b { color: var(--cream); }
+body[data-view=player] .rival-note.ahead b:last-child { color: var(--night-mint); }
 .waitnote b { color: var(--cream); font-family: var(--font-num); }
 
 /* The sister-app card: a dashed cut-out, quieter than the game. */
@@ -229,6 +232,8 @@ body[data-view=player] .resultpoints { display: grid; justify-items: center; gap
 body[data-view=player] .resultpoints strong { display: block; font: 700 58px/1.1 var(--font-num); color: var(--night-mint); }
 body[data-view=player] .resultpoints strong.zero { color: var(--night-soft); }
 body[data-view=player] .resultpoints span { font-size: 14px; color: var(--night-soft); }
+body[data-view=player] .streak-note { justify-self: center; width: fit-content; margin: 4px auto 0; padding: 6px 14px; border-radius: 999px; display: flex; align-items: center; gap: 6px; background: var(--night-mint); color: var(--navy); font-weight: 700; font-size: 15px; }
+body[data-view=player] .streak-note .i { width: 18px; height: 18px; }
 
 body[data-view=player] .player-main .explanation { margin: 18px 0 0; padding: 16px 18px; background: var(--cream); border: 3px solid var(--deep); border-radius: var(--r-box); color: var(--navy); }
 body[data-view=player] .player-main .explanation h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font: 500 18px var(--font-head); color: var(--navy); text-align: left; }

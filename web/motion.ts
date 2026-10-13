@@ -66,7 +66,7 @@ export function questionIn(root: ParentNode): void {
   rise(all(root, '.stageanswer, [data-answer]'), 0.15);
 }
 
-// The right answer lands with the reveal sound; then the tallies fill and count up in A–D order.
+// The right answer lands with the reveal sound; then the tallies fill and count up in answer order.
 export function revealIn(root: ParentNode): void {
   play(root.querySelector('.correctpill'), { opacity: [0, 1], scale: [0.8, 1] }, springs.celebrate);
   all(root, '.reveal-responses .stageanswer').forEach((answer, i) => {

@@ -38,7 +38,7 @@
   --font-num: 'Chakra Petch', 'Anuphan', sans-serif;
 }
 
-/* One home for the A–D colours: every answer surface reads --fill from its answer-N class. */
+/* One home for the answer colours: every answer surface reads --fill from its answer-N class. */
 .answer-0 { --fill: var(--a0); }
 .answer-1 { --fill: var(--a1); }
 .answer-2 { --fill: var(--a2); }
@@ -86,7 +86,7 @@
 :where([data-view=site], [data-view=player]) button.icon-only { width: 46px; padding: 0; }
 :where([data-view=site], [data-view=player]) :is(button, a, input, textarea, select):focus-visible { outline: 3px solid var(--green-deep); outline-offset: 3px; }
 
-/* The A–D letter block: a navy cut-out wherever an answer letter appears. */
+/* The answer badge: a navy cut-out wherever an answer shape appears. */
 :where([data-view=site], [data-view=player]) :is(.editchoice > span, .gameanswers button b, .answerline b) {
   flex: none;
   display: grid;

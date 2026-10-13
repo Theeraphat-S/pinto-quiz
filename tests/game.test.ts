@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizePin, PREVIEW_SECONDS, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
+import { currentStreak, streakBonus, DEFAULT_PREVIEW_SECONDS, normalizePin, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
 const quiz = () => ({ title: 'Quiz', music: true, questions: [{ text: 'Question?', options: ['A','B','C','D'], correct: 0, explanation: 'Because A', duration: 20, maxScore: 1000 }] });
 test('correct answers reward server-measured speed and reject deadline answers', () => {
   assert.equal(scoreAnswer(true, 0, 20, 1000), 1000);
@@ -42,6 +42,32 @@ test('pasted PINs keep only six digits', () => {
   assert.equal(normalizePin('PIN: 115 695 7'), '115695');
   assert.equal(normalizePin('11 5'), '115');
 });
-test('reading time before the options is a fixed 30 seconds', () => {
-  assert.equal(PREVIEW_SECONDS, 30);
+test('reading time is chosen per quiz and defaults to 5 seconds', () => {
+  assert.equal(DEFAULT_PREVIEW_SECONDS, 5);
+  assert.equal(validateQuiz(quiz()).preview, 5);
+  assert.equal(validateQuiz({ ...quiz(), preview: 20 }).preview, 20);
+  assert.throws(() => validateQuiz({ ...quiz(), preview: 0 }));
+  assert.throws(() => validateQuiz({ ...quiz(), preview: 45 }));
+});
+test('quizzes stored before the reading-time setting existed read back with the default', () => {
+  const stored = { id: 'q', title: 'Old', music: true, questions: [], updatedAt: 1 };
+  assert.equal(readQuiz(JSON.stringify(stored)).preview, 5);
+  assert.equal(readQuiz(JSON.stringify({ ...stored, preview: 30 })).preview, 30);
+});
+test('a streak counts correct answers in a row up to the given question', () => {
+  assert.equal(currentStreak([], 0), 0);
+  assert.equal(currentStreak([0, 1, 2], 2), 3);
+  assert.equal(currentStreak([0, 2], 2), 1, 'A wrong or missing answer breaks the run');
+  assert.equal(currentStreak([0, 1], 2), 0, 'The current question must be correct to count');
+  assert.equal(currentStreak([0, 1, 2], 1), 2, 'Later answers are ignored');
+});
+test('streak bonus starts at the second correct answer and caps at 500', () => {
+  assert.deepEqual([0, 1, 2, 3, 6, 7, 20].map(streakBonus), [0, 0, 100, 200, 500, 500, 500]);
+});
+test('rival display is chosen per quiz and defaults to name and gap', () => {
+  assert.equal(validateQuiz(quiz()).rival, 'name');
+  assert.equal(validateQuiz({ ...quiz(), rival: 'points' }).rival, 'points');
+  assert.equal(validateQuiz({ ...quiz(), rival: 'off' }).rival, 'off');
+  assert.throws(() => validateQuiz({ ...quiz(), rival: 'everyone' }));
+  assert.equal(readQuiz(JSON.stringify({ id: 'q', title: 'Old', music: true, questions: [], updatedAt: 1 })).rival, 'name');
 });
