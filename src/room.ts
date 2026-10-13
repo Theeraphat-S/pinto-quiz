@@ -1,6 +1,6 @@
 import { DurableObject } from 'cloudflare:workers';
 import { digest, HttpError, randomToken } from './security';
-import { type Quiz, type Player, type Phase, type RoomView, PREVIEW_SECONDS, scoreAnswer } from './shared';
+import { type Quiz, type Player, type Phase, type RoomView, previewSeconds, scoreAnswer } from './shared';
 type Room = { owner: string; pin: string; quiz: Quiz; phase: Phase; index: number; started: number; deadline: number; expires: number };
 type AnswerRow = { choice: number; points: number; elapsed: number };
 type Attachment = { role: 'host' | 'player'; id?: string };
@@ -54,7 +54,7 @@ export class QuizRoom extends DurableObject<Env> {
     const players = this.ctx.storage.sql.exec<Player>('SELECT id,name,score FROM players ORDER BY score DESC,name ASC,id ASC').toArray();
     const answeredCount = this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=?', r.index).one().n;
     const reveal = ['reveal', 'leaderboard', 'finished'].includes(r.phase);
-    const v: RoomView = { pin: r.pin, title: r.quiz.title, music: r.quiz.music, promo: r.quiz.promo, phase: r.phase, questionIndex: r.index, questionCount: r.quiz.questions.length, serverTime: Date.now(), deadline: r.deadline, players: a.role === 'host' || reveal ? players : [], playerCount: players.length, answeredCount, ...(a.role === 'host' ? { quizId: r.quiz.id } : {}) };
+    const v: RoomView = { pin: r.pin, title: r.quiz.title, music: r.quiz.music, promo: r.quiz.promo, preview: previewSeconds(r.quiz.preview), phase: r.phase, questionIndex: r.index, questionCount: r.quiz.questions.length, serverTime: Date.now(), deadline: r.deadline, players: a.role === 'host' || reveal ? players : [], playerCount: players.length, answeredCount, ...(a.role === 'host' ? { quizId: r.quiz.id } : {}) };
     // Do not publish question contents during the shared 3-2-1 countdown, nor the options while everyone reads the question.
     if (q && r.phase !== 'countdown') { v.question = { id: q.id, text: q.text, options: r.phase === 'preview' ? [] : q.options, duration: q.duration, maxScore: q.maxScore }; if (reveal) { v.question.correct = q.correct; v.question.explanation = q.explanation; v.distribution = q.options.map((_, i) => this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=? AND choice=?', r.index, i).one().n); } }
     if (a.id) { const player = players.find(p => p.id === a.id); const answer = this.ctx.storage.sql.exec<AnswerRow>('SELECT choice,points,elapsed FROM answers WHERE player=? AND question=?', a.id, r.index).toArray()[0]; if (player) v.me = { ...player, score: player.score - (!reveal && answer ? answer.points : 0), answered: !!answer, ...(answer ? { choice: answer.choice } : {}), ...(answer && reveal ? { points: answer.points, elapsed: answer.elapsed } : {}) }; }
@@ -118,7 +118,7 @@ export class QuizRoom extends DurableObject<Env> {
       return;
     }
     if (r.phase === 'countdown' && Date.now() >= r.deadline) {
-      r.phase = 'preview'; r.deadline = Date.now() + PREVIEW_SECONDS * 1000;
+      r.phase = 'preview'; r.deadline = Date.now() + previewSeconds(r.quiz.preview) * 1000;
       this.save(r); this.broadcast();
     } else if (r.phase === 'preview' && Date.now() >= r.deadline) { this.openAnswers(r); this.save(r); this.broadcast(); }
     else if (r.phase === 'question' && Date.now() >= r.deadline) { r.phase = 'reveal'; this.save(r); this.broadcast(); }

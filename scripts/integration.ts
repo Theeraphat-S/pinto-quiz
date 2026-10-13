@@ -28,7 +28,7 @@ try {
   const hostLogin = await request('/api/login', 'POST', { email, password }); assert.equal(hostLogin.status, 200);
   const otherLogin = await request('/api/login', 'POST', { email: other, password });
   const question = { id: 'ignored', text: 'Planet?', options: ['Jupiter','Saturn','Earth','Neptune'], correct: 0, explanation: 'Jupiter is the largest.', duration: 10, maxScore: 1000 };
-  const saved = await request('/api/quizzes', 'POST', { title: 'Integration Quiz', music: true, questions: [question, { ...question, text: 'Second?', correct: 1 }] }, hostLogin.cookie); assert.equal(saved.status, 201);
+  const saved = await request('/api/quizzes', 'POST', { title: 'Integration Quiz', music: true, preview: 10, questions: [question, { ...question, text: 'Second?', correct: 1 }] }, hostLogin.cookie); assert.equal(saved.status, 201);
   assert.equal((await request('/api/quizzes/' + saved.data.id, 'GET', undefined, otherLogin.cookie)).status, 404);
   const room = await request('/api/rooms', 'POST', { quizId: saved.data.id }, hostLogin.cookie); assert.equal(room.status, 201); const pin = String(room.data.pin);
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'start' }, otherLogin.cookie)).status, 403);
@@ -42,7 +42,7 @@ try {
   player.answer('not-yet-open', 0); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('ปิดรับคำตอบแล้ว'));
   const countdownHost = await host.state('countdown'); assert.equal(countdownHost.deadline, countdown.deadline, 'Host and players share a countdown deadline');
   const preview = await player.state('preview'); assert.equal(preview.question?.text, 'Planet?'); assert.deepEqual(preview.question?.options, [], 'Options stay hidden while players read the question');
-  const reading = preview.deadline - preview.serverTime; assert.ok(reading > 29000 && reading <= 30000, 'Reading time is a fixed 30 seconds');
+  const reading = preview.deadline - preview.serverTime; assert.ok(reading > 9000 && reading <= 10000, 'Reading time follows the quiz setting'); assert.equal(preview.preview, 10);
   player.answer(preview.question!.id, 0); await new Promise(r=>setTimeout(r,100)); assert.equal(player.errors.filter(e => e === 'ปิดรับคำตอบแล้ว').length, 2, 'No answers while reading');
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'open' }, hostLogin.cookie)).status, 200);
   const before = await player.state('question', () => true, 8000); assert.equal(before.question?.options.length, 4); assert.equal(before.question?.correct, undefined); assert.equal(before.question?.explanation, undefined);

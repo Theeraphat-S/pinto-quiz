@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizePin, PREVIEW_SECONDS, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
+import { DEFAULT_PREVIEW_SECONDS, normalizePin, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
 const quiz = () => ({ title: 'Quiz', music: true, questions: [{ text: 'Question?', options: ['A','B','C','D'], correct: 0, explanation: 'Because A', duration: 20, maxScore: 1000 }] });
 test('correct answers reward server-measured speed and reject deadline answers', () => {
   assert.equal(scoreAnswer(true, 0, 20, 1000), 1000);
@@ -42,6 +42,15 @@ test('pasted PINs keep only six digits', () => {
   assert.equal(normalizePin('PIN: 115 695 7'), '115695');
   assert.equal(normalizePin('11 5'), '115');
 });
-test('reading time before the options is a fixed 30 seconds', () => {
-  assert.equal(PREVIEW_SECONDS, 30);
+test('reading time is chosen per quiz and defaults to 5 seconds', () => {
+  assert.equal(DEFAULT_PREVIEW_SECONDS, 5);
+  assert.equal(validateQuiz(quiz()).preview, 5);
+  assert.equal(validateQuiz({ ...quiz(), preview: 20 }).preview, 20);
+  assert.throws(() => validateQuiz({ ...quiz(), preview: 0 }));
+  assert.throws(() => validateQuiz({ ...quiz(), preview: 45 }));
+});
+test('quizzes stored before the reading-time setting existed read back with the default', () => {
+  const stored = { id: 'q', title: 'Old', music: true, questions: [], updatedAt: 1 };
+  assert.equal(readQuiz(JSON.stringify(stored)).preview, 5);
+  assert.equal(readQuiz(JSON.stringify({ ...stored, preview: 30 })).preview, 30);
 });
