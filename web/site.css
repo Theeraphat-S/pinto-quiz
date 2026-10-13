@@ -193,6 +193,7 @@ body[data-view=site] .editchoice input[type=text]:focus { border-color: var(--na
 body[data-view=site] .editchoice input[type=radio] { width: 22px; height: 22px; min-height: 22px; accent-color: var(--green-deep); flex: none; }
 body[data-view=site] .choicehint { margin: 0 0 22px; }
 body[data-view=site] .settings { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+body[data-view=site] .settings.quizwide { margin-top: 18px; }
 body[data-view=site] .check { display: flex; gap: 10px; align-items: center; margin-top: 18px; font-weight: 500; font-size: 15px; }
 body[data-view=site] .check input { width: 22px; height: 22px; accent-color: var(--green-deep); }
 body[data-view=site] .removeq { margin-top: 22px; }

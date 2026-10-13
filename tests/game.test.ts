@@ -55,3 +55,10 @@ test('a streak counts correct answers in a row up to the given question', () => 
 test('streak bonus starts at the second correct answer and caps at 500', () => {
   assert.deepEqual([0, 1, 2, 3, 6, 7, 20].map(streakBonus), [0, 0, 100, 200, 500, 500, 500]);
 });
+test('rival display is chosen per quiz and defaults to name and gap', () => {
+  assert.equal(validateQuiz(quiz()).rival, 'name');
+  assert.equal(validateQuiz({ ...quiz(), rival: 'points' }).rival, 'points');
+  assert.equal(validateQuiz({ ...quiz(), rival: 'off' }).rival, 'off');
+  assert.throws(() => validateQuiz({ ...quiz(), rival: 'everyone' }));
+  assert.equal(readQuiz(JSON.stringify({ id: 'q', title: 'Old', music: true, questions: [], updatedAt: 1 })).rival, 'name');
+});

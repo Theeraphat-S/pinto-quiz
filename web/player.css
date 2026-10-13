@@ -77,6 +77,9 @@ body[data-view=player] .lobbyinfo > p:first-child { color: var(--cream); font-we
 .lobbycount strong { font: 700 64px/1 var(--font-num); color: var(--night-mint); }
 .lobbycount span { font-weight: 600; font-size: 17px; color: var(--cream); }
 body[data-view=player] .waitnote { text-align: center; margin: 14px 0 0; font-size: 15px; }
+body[data-view=player] .rival-note { text-align: center; margin: 0 0 14px; font-size: 16px; color: var(--night-soft); }
+.rival-note b { color: var(--cream); }
+.rival-note.ahead b:last-child { color: var(--night-mint); }
 .waitnote b { color: var(--cream); font-family: var(--font-num); }
 
 /* The sister-app card: a dashed cut-out, quieter than the game. */

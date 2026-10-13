@@ -37,7 +37,7 @@ try {
   const host = new Client(pin, hostLogin.cookie, true), player = new Client(pin, join.cookie), playerTwo = new Client(pin, joinTwo.cookie); clients.push(host,player,playerTwo);
   await host.state('lobby'); await player.state('lobby'); await playerTwo.state('lobby');
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'start' }, hostLogin.cookie)).status, 200);
-  const countdown = await player.state('countdown'); assert.equal(countdown.question, undefined, 'Question must stay hidden until countdown ends');
+  const countdown = await player.state('countdown'); assert.equal(countdown.question, undefined, 'Question must stay hidden until countdown ends'); assert.equal(countdown.rival, 'name', 'Rival display defaults to name and gap');
   assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'During countdown' })).status, 409);
   player.answer('not-yet-open', 0); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('ปิดรับคำตอบแล้ว'));
   const countdownHost = await host.state('countdown'); assert.equal(countdownHost.deadline, countdown.deadline, 'Host and players share a countdown deadline');
