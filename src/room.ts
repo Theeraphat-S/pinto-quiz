@@ -95,8 +95,8 @@ export class QuizRoom extends DurableObject<Env> {
       if (!Number.isInteger(input.choice) || input.choice < 0 || input.choice > 3) throw new Error('ตัวเลือกไม่ถูกต้อง');
       if (this.ctx.storage.sql.exec('SELECT player FROM answers WHERE player=? AND question=?', a.id, r.index).toArray().length) throw new Error('คุณตอบข้อนี้แล้ว');
       const elapsed = Date.now() - r.started, base = scoreAnswer(input.choice === q.correct, elapsed, q.duration, q.maxScore);
-      const before = currentStreak(this.ctx.storage.sql.exec<{ question: number }>('SELECT question FROM answers WHERE player=? AND question<? AND points>0', a.id, r.index).toArray().map(x => x.question), r.index - 1);
-      const points = base > 0 ? base + streakBonus(before + 1) : 0;
+      const priorStreak = this.streaks(r, r.index - 1).get(a.id) || 0;
+      const points = base > 0 ? base + streakBonus(priorStreak + 1) : 0;
       let complete = false;
       this.ctx.storage.transactionSync(() => {
         this.ctx.storage.sql.exec('INSERT INTO answers VALUES(?,?,?,?,?)', a.id!, r.index, input.choice, points, elapsed);

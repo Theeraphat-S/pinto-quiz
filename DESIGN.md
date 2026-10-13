@@ -87,7 +87,7 @@ The redesign replaced these generic patterns, which must not come back: pastel g
 - **Night Lid** (#1b214d) and **Night Mint** (#89f1ae): the player phone. On Night Lid, outlines and lips use **Deep Lid** (#0d1033), secondary text is **Night Soft** (#c9cde4), and quiet surfaces are **Lid Glass** (white at 7%, with a 18% dashed or solid line). **On Lid** (#d6d9ec) is secondary text on the navy top bar; **Placeholder** (#8a8ea6) is field hint text.
 - Connection trouble ("กำลังเชื่อมต่อใหม่…") is a Chili Coral bar: it is urgent.
 
-**The Fixed Answer Order Rule.** A is always mint, B lavender, C mango and D peach, on every surface, including on reveal. Correctness is shown with marks (✓ icon, outline, scale), never by repainting a tile.
+**The Fixed Answer Order Rule.** Answer 1 (▲) is always mint, 2 (◆) lavender, 3 (●) mango and 4 (■) peach, on every surface, including on reveal. Correctness is shown with marks (✓ icon, outline, scale), never by repainting a tile.
 
 ## Typography
 

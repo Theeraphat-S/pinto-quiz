@@ -47,7 +47,7 @@ try {
   assert.equal((await request(`/api/rooms/${pin}/command`, 'POST', { command: 'open' }, hostLogin.cookie)).status, 200);
   const before = await player.state('question', () => true, 8000); assert.equal(before.question?.options.length, 4); assert.equal(before.question?.correct, undefined); assert.equal(before.question?.explanation, undefined);
   assert.ok(before.deadline - before.serverTime > 9500, 'Full answer time starts when answers open');
-  player.answer(before.question!.id, 0); const answered = await player.state('question', s => s.me?.answered === true); assert.equal(answered.me?.points, undefined); assert.equal(answered.me?.score, 0, 'Answer correctness must not leak via total before reveal');
+  player.answer(before.question!.id, 0); const answered = await player.state('question', s => s.me?.answered === true); assert.equal(answered.me?.points, undefined); assert.equal(answered.me?.score, 0, 'Answer correctness must not leak via total before reveal'); assert.equal(answered.me?.streak, 0, 'A correct answer must not grow the streak before reveal');
   player.answer(before.question!.id, 1); await new Promise(r=>setTimeout(r,100)); assert.ok(player.errors.includes('คุณตอบข้อนี้แล้ว'));
   assert.equal((await request(`/api/rooms/${pin}/join`, 'POST', { name: 'Late' })).status, 409);
   assert.equal(host.states.at(-1)?.phase, 'question', 'Keep accepting answers until everyone answers');

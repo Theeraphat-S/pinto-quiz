@@ -1,3 +1,4 @@
+import type { Player } from '../src/shared';
 // Library facts: what a teacher needs to tell quizzes apart at a glance.
 export function durationLabel(questions: { duration: number }[]) {
   if (!questions.length) return '';
@@ -11,7 +12,7 @@ export const splitPin = (pin: string) => `${pin.slice(0, 3)} ${pin.slice(3)}`;
 // The nearest player with a different score: the one just ahead, or for a leader the one just behind.
 // Ties share a rank, so the rival is the closest distinct score, never a player level with you.
 export type Rival = { ahead: boolean; name: string; gap: number; rank: number };
-export function rival(players: { id: string; name: string; score: number }[], meId: string): Rival | null {
+export function rival(players: Player[], meId: string): Rival | null {
   const mine = players.find(p => p.id === meId); if (!mine) return null;
   const rankOf = (score: number) => players.findIndex(p => p.score === score) + 1;
   const above = players.filter(p => p.score > mine.score).at(-1);

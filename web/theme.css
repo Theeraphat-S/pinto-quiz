@@ -38,7 +38,7 @@
   --font-num: 'Chakra Petch', 'Anuphan', sans-serif;
 }
 
-/* One home for the A–D colours: every answer surface reads --fill from its answer-N class. */
+/* One home for the answer colours: every answer surface reads --fill from its answer-N class. */
 .answer-0 { --fill: var(--a0); }
 .answer-1 { --fill: var(--a1); }
 .answer-2 { --fill: var(--a2); }
@@ -85,12 +85,6 @@
 :where([data-view=site], [data-view=player]) button.big .i { width: 24px; height: 24px; }
 :where([data-view=site], [data-view=player]) button.icon-only { width: 46px; padding: 0; }
 :where([data-view=site], [data-view=player]) :is(button, a, input, textarea, select):focus-visible { outline: 3px solid var(--green-deep); outline-offset: 3px; }
-
-/* Answer shapes (▲ ◆ ● ■) scale with the badge's font size, so every badge keeps its existing sizing. */
-.shape { display: inline-block; width: 1em; height: 1em; vertical-align: -.125em; flex: none; }
-
-/* Answer streak badge next to a name in the standings, on the stage and the phone. */
-.streak-tag { display: inline-block; margin-left: .4em; padding: 0 .35em; border-radius: var(--r-mark); background: var(--gold); color: var(--navy); font: 700 .8em/1.4 var(--font-num); white-space: nowrap; vertical-align: .1em; }
 
 /* The answer badge: a navy cut-out wherever an answer shape appears. */
 :where([data-view=site], [data-view=player]) :is(.editchoice > span, .gameanswers button b, .answerline b) {
