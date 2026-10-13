@@ -89,6 +89,9 @@
 /* Answer shapes (▲ ◆ ● ■) scale with the badge's font size, so every badge keeps its existing sizing. */
 .shape { display: inline-block; width: 1em; height: 1em; vertical-align: -.125em; flex: none; }
 
+/* Answer streak badge next to a name in the standings, on the stage and the phone. */
+.streak-tag { display: inline-block; margin-left: .4em; padding: 0 .35em; border-radius: var(--r-mark); background: var(--gold); color: var(--navy); font: 700 .8em/1.4 var(--font-num); white-space: nowrap; vertical-align: .1em; }
+
 /* The answer badge: a navy cut-out wherever an answer shape appears. */
 :where([data-view=site], [data-view=player]) :is(.editchoice > span, .gameanswers button b, .answerline b) {
   flex: none;
