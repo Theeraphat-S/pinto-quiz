@@ -1,6 +1,6 @@
 export type Question = { id: string; text: string; options: string[]; correct: number; explanation: string; duration: number; maxScore: number };
 export type Quiz = { id: string; title: string; music: boolean; promo: boolean; questions: Question[]; updatedAt: number };
-export type Player = { id: string; name: string; score: number };
+export type Player = { id: string; name: string; score: number; streak?: number };
 export type Phase = 'lobby' | 'countdown' | 'preview' | 'question' | 'reveal' | 'leaderboard' | 'finished' | 'closed';
 export type RoomView = { pin: string; title: string; quizId?: string; phase: Phase; music: boolean; promo: boolean; questionIndex: number; questionCount: number; serverTime: number; deadline: number; players: Player[]; playerCount: number; answeredCount: number; question?: Omit<Question, 'correct' | 'explanation'> & { correct?: number; explanation?: string }; me?: Player & { answered: boolean; choice?: number; points?: number; elapsed?: number }; distribution?: number[] };
 // Reading time before the options appear. Fixed for every question; answer time starts after it.
@@ -9,6 +9,14 @@ export function scoreAnswer(correct: boolean, elapsedMs: number, durationSeconds
   if (!correct || elapsedMs < 0 || elapsedMs >= durationSeconds * 1000) return 0;
   return Math.round(maximum * (1 - .5 * elapsedMs / (durationSeconds * 1000)));
 }
+// Correct answers in a row ending at question `through`; a wrong or missing answer breaks the run.
+export function currentStreak(correctQuestions: Iterable<number>, through: number): number {
+  const correct = new Set(correctQuestions); let n = 0;
+  while (correct.has(through - n)) n++;
+  return n;
+}
+// Kahoot-style answer streak: from the second correct answer in a row, +100 per answer, capped at +500.
+export function streakBonus(streak: number): number { return streak < 2 ? 0 : Math.min(500, (streak - 1) * 100); }
 export function validateQuiz(value: unknown): Omit<Quiz, 'id' | 'updatedAt'> {
   if (!value || typeof value !== 'object') throw new Error('ข้อมูล Quiz ไม่ถูกต้อง');
   const data = value as Record<string, unknown>;

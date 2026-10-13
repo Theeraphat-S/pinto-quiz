@@ -229,6 +229,7 @@ body[data-view=player] .resultpoints { display: grid; justify-items: center; gap
 body[data-view=player] .resultpoints strong { display: block; font: 700 58px/1.1 var(--font-num); color: var(--night-mint); }
 body[data-view=player] .resultpoints strong.zero { color: var(--night-soft); }
 body[data-view=player] .resultpoints span { font-size: 14px; color: var(--night-soft); }
+body[data-view=player] .streak-note { justify-self: center; width: fit-content; margin: 4px auto 0; padding: 6px 14px; border-radius: 999px; background: var(--gold); color: var(--navy); font-weight: 700; font-size: 15px; }
 
 body[data-view=player] .player-main .explanation { margin: 18px 0 0; padding: 16px 18px; background: var(--cream); border: 3px solid var(--deep); border-radius: var(--r-box); color: var(--navy); }
 body[data-view=player] .player-main .explanation h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font: 500 18px var(--font-head); color: var(--navy); text-align: left; }

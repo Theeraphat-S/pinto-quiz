@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizePin, PREVIEW_SECONDS, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
+import { currentStreak, streakBonus, normalizePin, PREVIEW_SECONDS, promoTagline, PROMO_TAGLINES, readQuiz, scoreAnswer, validateQuiz } from '../src/shared';
 const quiz = () => ({ title: 'Quiz', music: true, questions: [{ text: 'Question?', options: ['A','B','C','D'], correct: 0, explanation: 'Because A', duration: 20, maxScore: 1000 }] });
 test('correct answers reward server-measured speed and reject deadline answers', () => {
   assert.equal(scoreAnswer(true, 0, 20, 1000), 1000);
@@ -44,4 +44,14 @@ test('pasted PINs keep only six digits', () => {
 });
 test('reading time before the options is a fixed 30 seconds', () => {
   assert.equal(PREVIEW_SECONDS, 30);
+});
+test('a streak counts correct answers in a row up to the given question', () => {
+  assert.equal(currentStreak([], 0), 0);
+  assert.equal(currentStreak([0, 1, 2], 2), 3);
+  assert.equal(currentStreak([0, 2], 2), 1, 'A wrong or missing answer breaks the run');
+  assert.equal(currentStreak([0, 1], 2), 0, 'The current question must be correct to count');
+  assert.equal(currentStreak([0, 1, 2], 1), 2, 'Later answers are ignored');
+});
+test('streak bonus starts at the second correct answer and caps at 500', () => {
+  assert.deepEqual([0, 1, 2, 3, 6, 7, 20].map(streakBonus), [0, 0, 100, 200, 500, 500, 500]);
 });

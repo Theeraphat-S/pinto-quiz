@@ -1,10 +1,12 @@
 import { DurableObject } from 'cloudflare:workers';
 import { digest, HttpError, randomToken } from './security';
-import { type Quiz, type Player, type Phase, type RoomView, PREVIEW_SECONDS, scoreAnswer } from './shared';
+import { type Quiz, type Player, type Phase, type RoomView, PREVIEW_SECONDS, currentStreak, scoreAnswer, streakBonus } from './shared';
 type Room = { owner: string; pin: string; quiz: Quiz; phase: Phase; index: number; started: number; deadline: number; expires: number };
 type AnswerRow = { choice: number; points: number; elapsed: number };
 type Attachment = { role: 'host' | 'player'; id?: string };
 export class QuizRoom extends DurableObject<Env> {
+  // Answers up to a closed question never change, so streaks are computed once per question, not per socket.
+  private streakMemo?: { key: string; streaks: Map<string, number> };
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS room(id INTEGER PRIMARY KEY, data TEXT NOT NULL)');
@@ -49,11 +51,21 @@ export class QuizRoom extends DurableObject<Env> {
   }
   private timed(r: Room): boolean { return r.phase === 'countdown' || r.phase === 'preview' || r.phase === 'question'; }
   private openAnswers(r: Room): void { r.phase = 'question'; r.started = Date.now(); r.deadline = r.started + r.quiz.questions[r.index].duration * 1000; }
+  private streaks(r: Room, through: number): Map<string, number> {
+    const key = `${r.expires}:${through}`;
+    if (this.streakMemo?.key === key) return this.streakMemo.streaks;
+    const correct = new Map<string, number[]>();
+    for (const row of this.ctx.storage.sql.exec<{ player: string; question: number }>('SELECT player,question FROM answers WHERE question<=? AND points>0', through)) correct.set(row.player, [...(correct.get(row.player) || []), row.question]);
+    const streaks = new Map([...correct].map(([player, questions]) => [player, currentStreak(questions, through)]));
+    this.streakMemo = { key, streaks }; return streaks;
+  }
   private view(a: Attachment): RoomView {
     const r = this.requireRoom(); const q = r.quiz.questions[r.index];
-    const players = this.ctx.storage.sql.exec<Player>('SELECT id,name,score FROM players ORDER BY score DESC,name ASC,id ASC').toArray();
-    const answeredCount = this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=?', r.index).one().n;
     const reveal = ['reveal', 'leaderboard', 'finished'].includes(r.phase);
+    // Before the reveal the current question must not count, or a streak would leak whether the answer was right.
+    const streaks = this.streaks(r, reveal ? r.index : r.index - 1);
+    const players = this.ctx.storage.sql.exec<Player>('SELECT id,name,score FROM players ORDER BY score DESC,name ASC,id ASC').toArray().map(p => ({ ...p, streak: streaks.get(p.id) || 0 }));
+    const answeredCount = this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=?', r.index).one().n;
     const v: RoomView = { pin: r.pin, title: r.quiz.title, music: r.quiz.music, promo: r.quiz.promo, phase: r.phase, questionIndex: r.index, questionCount: r.quiz.questions.length, serverTime: Date.now(), deadline: r.deadline, players: a.role === 'host' || reveal ? players : [], playerCount: players.length, answeredCount, ...(a.role === 'host' ? { quizId: r.quiz.id } : {}) };
     // Do not publish question contents during the shared 3-2-1 countdown, nor the options while everyone reads the question.
     if (q && r.phase !== 'countdown') { v.question = { id: q.id, text: q.text, options: r.phase === 'preview' ? [] : q.options, duration: q.duration, maxScore: q.maxScore }; if (reveal) { v.question.correct = q.correct; v.question.explanation = q.explanation; v.distribution = q.options.map((_, i) => this.ctx.storage.sql.exec<{ n: number }>('SELECT count(*) AS n FROM answers WHERE question=? AND choice=?', r.index, i).one().n); } }
@@ -82,7 +94,9 @@ export class QuizRoom extends DurableObject<Env> {
       if (r.phase !== 'question' || !q || input.questionId !== q.id || Date.now() >= r.deadline) throw new Error('ปิดรับคำตอบแล้ว');
       if (!Number.isInteger(input.choice) || input.choice < 0 || input.choice > 3) throw new Error('ตัวเลือกไม่ถูกต้อง');
       if (this.ctx.storage.sql.exec('SELECT player FROM answers WHERE player=? AND question=?', a.id, r.index).toArray().length) throw new Error('คุณตอบข้อนี้แล้ว');
-      const elapsed = Date.now() - r.started, points = scoreAnswer(input.choice === q.correct, elapsed, q.duration, q.maxScore);
+      const elapsed = Date.now() - r.started, base = scoreAnswer(input.choice === q.correct, elapsed, q.duration, q.maxScore);
+      const before = currentStreak(this.ctx.storage.sql.exec<{ question: number }>('SELECT question FROM answers WHERE player=? AND question<? AND points>0', a.id, r.index).toArray().map(x => x.question), r.index - 1);
+      const points = base > 0 ? base + streakBonus(before + 1) : 0;
       let complete = false;
       this.ctx.storage.transactionSync(() => {
         this.ctx.storage.sql.exec('INSERT INTO answers VALUES(?,?,?,?,?)', a.id!, r.index, input.choice, points, elapsed);
